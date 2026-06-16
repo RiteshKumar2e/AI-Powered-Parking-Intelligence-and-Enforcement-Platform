@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DFD · AI-Powered Parking Intelligence &amp; Enforcement Platform</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:#eef1f6;color:#1a2b3c;padding:20px;}
+  header{background:linear-gradient(135deg,#0b5740,#16a37a);color:#fff;padding:22px 28px;border-radius:12px;margin-bottom:22px;}
+  header h1{font-size:20px;margin-bottom:4px;}
+  header p{font-size:13px;opacity:.92;}
+  .card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);padding:20px 22px;margin-bottom:18px;}
+  .card h2{font-size:15px;color:#1a2b3c;margin-bottom:3px;}
+  .card .sub{font-size:12px;color:#6b7a8d;margin-bottom:14px;}
+  .l2hdr{background:#f0f6ff;border-left:4px solid #5b8def;padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:18px;}
+  .l2hdr h2{font-size:16px;color:#1a2b3c;margin-bottom:4px;}
+  .l2hdr p{font-size:12.5px;color:#5b6776;}
+  .scroll{overflow-x:auto;}
+  svg{display:block;overflow:visible;}
+  .legend{display:flex;flex-wrap:wrap;gap:12px 20px;padding-top:14px;border-top:1px solid #e8ecf0;margin-top:14px;}
+  .li{display:flex;align-items:center;gap:8px;font-size:12px;color:#556;}
+  .sw{width:30px;height:18px;flex-shrink:0;}
+  button{font:inherit;font-size:13px;cursor:pointer;border:1px solid #c7cfdb;background:#fff;
+         padding:7px 14px;border-radius:8px;margin-bottom:14px;}
+  button:hover{background:#eef2f7;}
+  @media print{body{background:#fff;padding:0;}.card{box-shadow:none;border:1px solid #ddd;page-break-inside:avoid;}
+    .scroll{overflow:visible;}button{display:none;}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Data Flow Diagrams (DFD) — Leveled</h1>
+  <p>AI-Powered Parking Intelligence &amp; Enforcement Platform &nbsp;·&nbsp; Level 0 · Level 1 · Level 2 (per-process decompositions)</p>
+</header>
+
+<button onclick="window.print()">🖨 Print / Save as PDF</button>
+
+<!-- Legend -->
+<div class="card">
+  <h2>Notation</h2>
+  <div class="legend">
+    <div class="li"><svg class="sw" viewBox="0 0 30 18"><rect x="1" y="1" width="28" height="16" rx="4" fill="#BBDEFB" stroke="#1565C0" stroke-width="1.5"/></svg>External Entity</div>
+    <div class="li"><svg class="sw" viewBox="0 0 30 18"><ellipse cx="15" cy="9" rx="14" ry="8" fill="#FFF9C4" stroke="#F9A825" stroke-width="1.5"/></svg>Process</div>
+    <div class="li"><svg class="sw" viewBox="0 0 30 18"><rect x="1" y="6" width="28" height="11" fill="#A5D6A7" stroke="#2E7D32" stroke-width="1.5"/><ellipse cx="15" cy="6" rx="14" ry="5" fill="#A5D6A7" stroke="#2E7D32" stroke-width="1.5"/></svg>Data Store</div>
+    <div class="li"><svg class="sw" viewBox="0 0 30 18"><rect x="1" y="6" width="28" height="11" fill="#EF9A9A" stroke="#C62828" stroke-width="1.5"/><ellipse cx="15" cy="6" rx="14" ry="5" fill="#EF9A9A" stroke="#C62828" stroke-width="1.5"/></svg>Primary Store (Violations)</div>
+    <div class="li"><svg class="sw" viewBox="0 0 30 18"><rect x="1" y="6" width="28" height="11" fill="#FFCC80" stroke="#E65100" stroke-width="1.5"/><ellipse cx="15" cy="6" rx="14" ry="5" fill="#FFCC80" stroke="#E65100" stroke-width="1.5"/></svg>Time-series / Config Store</div>
+    <div class="li"><svg class="sw" viewBox="0 0 30 18"><rect x="1" y="6" width="28" height="11" fill="#CE93D8" stroke="#7B1FA2" stroke-width="1.5"/><ellipse cx="15" cy="6" rx="14" ry="5" fill="#CE93D8" stroke="#7B1FA2" stroke-width="1.5"/></svg>Reports / ML Registry</div>
+    <div class="li"><svg class="sw" viewBox="0 0 30 18"><rect x="1" y="1" width="28" height="16" rx="4" fill="#E8EAF6" stroke="#7986CB" stroke-width="1.5"/></svg>Output / Result</div>
+    <div class="li"><svg class="sw" viewBox="0 0 30 18"><rect x="1" y="1" width="28" height="16" rx="4" fill="#C8E6C9" stroke="#2E7D32" stroke-width="1.5"/></svg>Final Output (Authority)</div>
+    <div class="li"><svg class="sw" viewBox="0 0 34 14"><defs><marker id="la" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto"><path d="M0,0L7,3.5L0,7Z" fill="#445566"/></marker></defs><line x1="2" y1="7" x2="30" y2="7" stroke="#445566" stroke-width="1.8" marker-end="url(#la)"/></svg>Data Flow</div>
+  </div>
+</div>
+
+<!-- ══════════════ LEVEL 0 ══════════════ -->
+<div class="card">
+  <h2>Level 0 — Context Diagram</h2>
+  <div class="sub">Entire platform as one process. Shows all external actors and the data exchanged in both directions.</div>
+  <div class="scroll"><svg id="s0" width="960" height="474"></svg></div>
+</div>
+
+<!-- ══════════════ LEVEL 1 ══════════════ -->
+<div class="card">
+  <h2>Level 1 — Process Overview (one lane per process)</h2>
+  <div class="sub">All 8 main processes: Input Source → Process → Data Store → Output. Each row is independent and left-to-right.</div>
+  <div class="scroll"><svg id="s1" width="820"></svg></div>
+</div>
+
+<!-- ══════════════ LEVEL 2 ══════════════ -->
+<div class="l2hdr">
+  <h2>Level 2 — Sub-Process Decompositions</h2>
+  <p>Each Level 1 process decomposed into its internal sub-steps (n.1, n.2, …). Intermediate caches are temporary stores used within the process; final stores (D0–D7) are the persistent databases.</p>
+</div>
+
+<div class="card"><h2>Level 2.1 — Decomposition of 1.0 Ingestion &amp; Frame Sampling</h2>
+  <div class="sub">Camera streams are read, rate-sampled, and published to the Kafka frame topic for downstream ML workers.</div>
+  <div class="scroll"><svg id="s21" width="820"></svg></div>
+</div>
+<div class="card"><h2>Level 2.2 — Decomposition of 2.0 Detection &amp; Tracking</h2>
+  <div class="sub">Frames go through GPU preprocessing, YOLO detection, ByteTrack multi-object tracking, and dwell-time accumulation.</div>
+  <div class="scroll"><svg id="s22" width="820"></svg></div>
+</div>
+<div class="card"><h2>Level 2.3 — Decomposition of 3.0 Violation Engine</h2>
+  <div class="sub">Tracks are checked against PostGIS geofences, validated against dwell thresholds, logged as violations, and annotated evidence is stored in S3.</div>
+  <div class="scroll"><svg id="s23" width="820"></svg></div>
+</div>
+<div class="card"><h2>Level 2.4 — Decomposition of 4.0 LPR / OCR</h2>
+  <div class="sub">A vehicle frame goes through plate localization, deskew/crop normalization, PaddleOCR recognition, and Indian-plate text normalization.</div>
+  <div class="scroll"><svg id="s24" width="820"></svg></div>
+</div>
+<div class="card"><h2>Level 2.5 — Decomposition of 5.0 Congestion Analytics</h2>
+  <div class="sub">Detections feed a density counter, occupancy calculator, and flow estimator whose outputs are combined into the 0–100 congestion score written to TimescaleDB.</div>
+  <div class="scroll"><svg id="s25" width="820"></svg></div>
+</div>
+<div class="card"><h2>Level 2.6 — Decomposition of 6.0 Hotspot Prediction</h2>
+  <div class="sub">Historical data builds feature vectors, feeds nightly model training, and serves live hotspot probabilities with enforcement recommendations.</div>
+  <div class="scroll"><svg id="s26" width="820"></svg></div>
+</div>
+<div class="card"><h2>Level 2.7 — Decomposition of 7.0 LLM Reporting (Claude)</h2>
+  <div class="sub">Structured data is aggregated, a cached system prompt is combined with JSON context, sent to <code>claude-opus-4-8</code>, and the response is grounding-validated before storage.</div>
+  <div class="scroll"><svg id="s27" width="820"></svg></div>
+</div>
+<div class="card"><h2>Level 2.8 — Decomposition of 8.0 Dashboard &amp; API</h2>
+  <div class="sub">Covers JWT auth/RBAC, REST query serving (Redis cache), WebSocket live-alert push (Redis pub/sub), and PDF/CSV report export.</div>
+  <div class="scroll"><svg id="s28" width="820"></svg></div>
+</div>
+
+<script>
+/* ═══════════════ SVG helpers ═══════════════ */
+const NS="http://www.w3.org/2000/svg";
+function E(tag,a,p){const e=document.createElementNS(NS,tag);Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));if(p)p.appendChild(e);return e;}
+function T(p,x,y,s,sz,fill,anc){const t=E("text",{x,y,"text-anchor":anc||"middle","font-size":sz,fill,"font-weight":"600","font-family":"'Segoe UI',Arial,sans-serif","dominant-baseline":"central"},p);t.textContent=s;return t;}
+function ML(p,cx,cy,lines,sz,fill){const lh=sz*1.38,sy=cy-(lines.length-1)*lh/2;lines.forEach((l,i)=>T(p,cx,sy+i*lh,l,sz,fill));}
+function RECT(p,x,y,w,h,rx,fill,stroke){E("rect",{x,y,width:w,height:h,rx,fill,stroke,"stroke-width":1.7},p);}
+function OVAL(p,cx,cy,rx,ry,fill,stroke){E("ellipse",{cx,cy,rx,ry,fill,stroke,"stroke-width":1.9},p);}
+function CYL(p,x,y,w,h,fill,stroke){
+  const cx=x+w/2,ery=8;
+  E("rect",{x,y:y+ery,width:w,height:h-ery,fill,stroke,"stroke-width":1.6},p);
+  E("path",{d:`M${x},${y+h} A${w/2},${ery} 0 0,0 ${x+w},${y+h}`,fill:"none",stroke,"stroke-width":1.6},p);
+  E("ellipse",{cx,cy:y+ery,rx:w/2,ry:ery,fill,stroke,"stroke-width":1.6},p);
+}
+function DEFS(svg){
+  const d=E("defs",{},svg);
+  [["ah","#445566"],["ahB","#1565C0"],["ahG","#2E7D32"],["ahI","#3949AB"],["ahO","#E65100"]]
+  .forEach(([id,col])=>{const m=E("marker",{id,markerWidth:10,markerHeight:10,refX:9,refY:3.5,orient:"auto"},d);E("path",{d:"M0,0 L9,3.5 L0,7Z",fill:col},m);});
+}
+function GRID(p,w,h){
+  E("rect",{x:0,y:0,width:w,height:h,fill:"#fafbfd"},p);
+  for(let x=0;x<w;x+=24)E("line",{x1:x,y1:0,x2:x,y2:h,stroke:"#e8ecf3","stroke-width":.5},p);
+  for(let y=0;y<h;y+=24)E("line",{x1:0,y1:y,x2:w,y2:y,stroke:"#e8ecf3","stroke-width":.5},p);
+}
+
+/* ═══════════════ Colour palette ═══════════════ */
+const cE ={fill:"#BBDEFB",st:"#1565C0",tx:"#0D47A1"};
+const cP ={fill:"#FFF9C4",st:"#F9A825",tx:"#5D4037"};
+const cSG={fill:"#A5D6A7",st:"#2E7D32",tx:"#1B5E20"};
+const cSR={fill:"#EF9A9A",st:"#C62828",tx:"#7f0000"};
+const cSO={fill:"#FFCC80",st:"#E65100",tx:"#7f2c00"};
+const cSP={fill:"#CE93D8",st:"#7B1FA2",tx:"#4a0072"};
+const cOG={fill:"#C8E6C9",st:"#2E7D32",tx:"#1B5E20"};
+const cO ={fill:"#E8EAF6",st:"#7986CB",tx:"#283593"};
+
+/* ═══════════════ Shared row-rendering engine ═══════════════
+   Column layout (within 820px svg):
+   Entity 12..158  |gap 42px|  Process 200..360  |gap 60px|  Store 420..584  |gap 60px|  Output 644..798
+*/
+const EX=12,EW=146, PCX=280,PRX=80,PRY=27, SX=420,SW=164, OX=644,OW=154;
+const BH=54,ROW_H=82,TOP=28;
+const SVG_W=820;
+
+function drawRows(svgId,rows){
+  const svg=document.getElementById(svgId);
+  if(!svg)return;
+  const H=TOP+rows.length*ROW_H+18;
+  svg.setAttribute("height",H);
+  DEFS(svg);GRID(svg,SVG_W,H);
+  // Column headers
+  [["Input Source",EX+EW/2],["Process",PCX],["Data Store",SX+SW/2],["Output / Result",OX+OW/2]].forEach(([h,x])=>{
+    E("rect",{x:x-70,y:4,width:140,height:18,rx:4,fill:"#dce3ef"},svg);
+    T(svg,x,13,h,10.5,"#445566");
+  });
+  rows.forEach((r,i)=>{
+    const ty=TOP+i*ROW_H, cy=ty+BH/2;
+    // Row stripe
+    E("rect",{x:6,y:ty-2,width:SVG_W-12,height:BH+4,rx:5,fill:i%2===0?"rgba(233,241,254,.65)":"rgba(248,250,255,.5)"},svg);
+    // ── Arrows (drawn first, behind shapes) ──
+    const draw_arrow=(x1,x2,label)=>{
+      E("line",{x1,y1:cy,x2,y2:cy,stroke:"#556677","stroke-width":1.7,"marker-end":"url(#ah)"},svg);
+      if(label){const w=label.length*5.5+10,mx=(x1+x2)/2;E("rect",{x:mx-w/2,y:cy-15,width:w,height:13,rx:3,fill:"#fff","fill-opacity":.93},svg);T(svg,mx,cy-8,label,9,"#334455");}
+    };
+    draw_arrow(EX+EW, PCX-PRX, r.a1);
+    draw_arrow(PCX+PRX, SX,     r.a2);
+    draw_arrow(SX+SW,  OX,      r.a3);
+    // ── Shapes (drawn over arrows) ──
+    RECT(svg,EX,ty,EW,BH,7,r.sc.fill,r.sc.st);ML(svg,EX+EW/2,cy,r.src,11,r.sc.tx);
+    OVAL(svg,PCX,cy+3,PRX,PRY,cP.fill,cP.st);T(svg,PCX,ty+5,r.pn,9,"#b08000");ML(svg,PCX,cy+5,r.pl,10.5,cP.tx);
+    CYL(svg,SX,ty,SW,BH,r.dc.fill,r.dc.st);T(svg,SX+SW/2,ty+9,r.sid,9,r.dc.tx);ML(svg,SX+SW/2,cy+5,r.sl,10,r.dc.tx);
+    RECT(svg,OX,ty,OW,BH,7,r.oc.fill,r.oc.st);ML(svg,OX+OW/2,cy,r.out,11,r.oc.tx);
+    if(i<rows.length-1)E("line",{x1:8,y1:ty+BH+2,x2:SVG_W-8,y2:ty+BH+2,stroke:"#ccd4e0","stroke-width":.8},svg);
+  });
+}
+
+/* ═══════════════ LEVEL 0 (context — custom) ═══════════════ */
+const s0=document.getElementById("s0");
+DEFS(s0);GRID(s0,960,474);
+const CX=466,CY=214,ORX=192,ORY=102;
+// Arrows BEFORE shapes
+const A0=(x1,y1,x2,y2,lbl,col,mk)=>{
+  col=col||"#445566";mk=mk||"ah";
+  E("line",{x1,y1,x2,y2,stroke:col,"stroke-width":1.85,"marker-end":`url(#${mk})`},s0);
+  if(lbl){const w=lbl.length*5.8+12,mx=(x1+x2)/2,my=(y1+y2)/2;E("rect",{x:mx-w/2,y:my-14,width:w,height:14,rx:3,fill:"#fff","fill-opacity":.93},s0);T(s0,mx,my-6,lbl,9.5,col);}
+};
+A0(188,200,272,200,"camera feeds / image uploads","#1565C0","ahB");
+A0(272,228,188,228,"status / alerts / notifications","#1565C0","ahB");
+A0(652,190,766,116,"dashboards · reports · alerts","#2E7D32","ahG");
+A0(766,142,656,212,"queries · enforcement actions","#2E7D32","ahG");
+A0(650,242,768,308,"structured data / prompt","#3949AB","ahI");
+A0(768,332,651,258,"generated reports & insights","#3949AB","ahI");
+A0(444,390,454,316,"manage users / zones / cameras","#E65100","ahO");
+A0(476,316,468,390,"system reports & analytics","#E65100","ahO");
+// Shapes AFTER arrows
+OVAL(s0,CX,CY,ORX,ORY,"#FFFDE7","#F9A825");
+ML(s0,CX,CY-14,["AI-Powered Parking Intelligence"],14,"#5D4037");
+T(s0,CX,CY+2,"&",13,"#5D4037");ML(s0,CX,CY+18,["Enforcement Platform"],14,"#5D4037");
+RECT(s0,20,174,164,80,8,"#BBDEFB","#1565C0");ML(s0,102,214,["Traffic Cameras","/ Uploads"],12,"#0D47A1");
+RECT(s0,768,80,182,82,8,"#C8E6C9","#2E7D32");ML(s0,859,121,["Traffic Authority","(Officers · Analysts · Admin)"],11,"#1B5E20");
+RECT(s0,768,292,182,80,8,"#E8EAF6","#3949AB");ML(s0,859,332,["Anthropic","Claude API"],12.5,"#1A237E");
+RECT(s0,354,390,194,68,8,"#FFE0B2","#E65100");ML(s0,451,424,["System Admin"],12.5,"#BF360C");
+
+/* ═══════════════ LEVEL 1 data ═══════════════ */
+drawRows("s1",[
+  {src:["Traffic","Cameras"],sc:cE,a1:"RTSP / video feed",pn:"1.0",pl:["Ingestion &","Frame Sampling"],a2:"sampled frames",sid:"D0",sl:["Frame Queue","(Kafka)"],dc:cSG,a3:"frames → ML",out:["ML Workers","(YOLO/OCR)"],oc:cO},
+  {src:["Frame Queue","(Kafka)"],sc:cE,a1:"sampled frame",pn:"2.0",pl:["Detection &","Tracking (YOLO)"],a2:"detections + tracks",sid:"D1",sl:["Detections","Store"],dc:cSG,a3:"track + dwell",out:["Dwell-time","Events"],oc:cO},
+  {src:["Track + Zone","Polygons"],sc:cE,a1:"dwell + location",pn:"3.0",pl:["Violation","Engine"],a2:"violation record",sid:"D2",sl:["Violations DB","(PostgreSQL)"],dc:cSR,a3:"violation event",out:["Evidence &","Plate Crop"],oc:cO},
+  {src:["Plate Region","(crop)"],sc:cE,a1:"plate image",pn:"4.0",pl:["LPR / OCR","(PaddleOCR)"],a2:"plate + confidence",sid:"D3",sl:["Plates DB","(PostgreSQL)"],dc:cSG,a3:"plate number",out:["Plate Text","& Confidence"],oc:cO},
+  {src:["Detections +","Road Mask"],sc:cE,a1:"count / occupancy",pn:"5.0",pl:["Congestion","Analytics"],a2:"congestion metric",sid:"D4",sl:["Congestion DB","(Timescale)"],dc:cSO,a3:"score 0–100",out:["Congestion","Score"],oc:cO},
+  {src:["Congestion +","Violations"],sc:cE,a1:"historical features",pn:"6.0",pl:["Hotspot","Prediction"],a2:"hotspot probability",sid:"D5",sl:["Predictions DB","(PostgreSQL)"],dc:cSG,a3:"forecast",out:["Hotspot","Forecasts"],oc:cO},
+  {src:["Violations,","Congestion, Pred."],sc:cE,a1:"structured data",pn:"7.0",pl:["LLM Reporting","(Claude API)"],a2:"generated report",sid:"D6",sl:["Reports DB","(PostgreSQL)"],dc:cSP,a3:"report",out:["Enforcement","Report"],oc:cO},
+  {src:["All Data","Stores"],sc:cE,a1:"queries + live events",pn:"8.0",pl:["Dashboard &","REST / WebSocket"],a2:"auth / session",sid:"D7",sl:["Users &","Sessions DB"],dc:cSG,a3:"live data",out:["Traffic","Authority"],oc:cOG},
+]);
+
+/* ═══════════════ LEVEL 2 data ═══════════════ */
+
+// 2.1 — 1.0 Ingestion & Frame Sampling
+drawRows("s21",[
+  {src:["Cameras","(RTSP/Upload)"],sc:cE,a1:"video stream",pn:"1.1",pl:["Stream","Reader"],a2:"raw frames",sid:"BUF",sl:["Frame Buffer","(RAM)"],dc:cSG,a3:"batch",out:["Raw Frames"],oc:cO},
+  {src:["Raw Frames"],sc:cE,a1:"frame batch",pn:"1.2",pl:["Frame","Sampler"],a2:"selected frame",sid:"SMP",sl:["Sample Queue","(in-memory)"],dc:cSG,a3:"1-of-N frames",out:["Sampled Frame"],oc:cO},
+  {src:["Sampled Frame"],sc:cE,a1:"frame + metadata",pn:"1.3",pl:["Kafka","Publisher"],a2:"frame message",sid:"D0",sl:["Frame Topic","(Kafka)"],dc:cSG,a3:"to ML workers",out:["Detection Workers"],oc:cO},
+]);
+
+// 2.2 — 2.0 Detection & Tracking
+drawRows("s22",[
+  {src:["Sampled Frame"],sc:cE,a1:"raw frame",pn:"2.1",pl:["Frame","Preprocessor"],a2:"normalized tensor",sid:"PRE",sl:["Preproc Cache","(GPU mem)"],dc:cSG,a3:"tensor",out:["Norm. Frame"],oc:cO},
+  {src:["Norm. Frame"],sc:cE,a1:"input tensor",pn:"2.2",pl:["YOLO","Inference"],a2:"bounding boxes",sid:"DET",sl:["Detection","Cache"],dc:cSG,a3:"detections",out:["BBoxes + Class"],oc:cO},
+  {src:["BBoxes + Class"],sc:cE,a1:"detections",pn:"2.3",pl:["ByteTrack","Tracker"],a2:"track + object ID",sid:"TRK",sl:["Track State","Cache"],dc:cSG,a3:"active tracks",out:["Track + ID"],oc:cO},
+  {src:["Track + ID"],sc:cE,a1:"track position",pn:"2.4",pl:["Dwell","Timer"],a2:"dwell time",sid:"D1",sl:["Detections","Store"],dc:cSG,a3:"dwell event",out:["Dwell Events"],oc:cO},
+]);
+
+// 2.3 — 3.0 Violation Engine
+drawRows("s23",[
+  {src:["Track + Dwell"],sc:cE,a1:"location + dwell",pn:"3.1",pl:["Geofence","Check"],a2:"zone query",sid:"ZDB",sl:["Zones DB","(PostGIS)"],dc:cSG,a3:"in-zone hit",out:["In-Zone Hit"],oc:cO},
+  {src:["In-Zone Hit"],sc:cE,a1:"hit + dwell time",pn:"3.2",pl:["Dwell Threshold","Rule"],a2:"threshold check",sid:"CFG",sl:["Zone Config","(dwell limit)"],dc:cSO,a3:"candidate",out:["Violation Candidate"],oc:cO},
+  {src:["Violation Candidate"],sc:cE,a1:"candidate event",pn:"3.3",pl:["Violation","Creator"],a2:"violation record",sid:"D2",sl:["Violations DB","(PostgreSQL)"],dc:cSR,a3:"violation ID",out:["Violation Record"],oc:cO},
+  {src:["Violation Record"],sc:cE,a1:"record + frame",pn:"3.4",pl:["Evidence","Builder"],a2:"annotated image",sid:"EVD",sl:["Evidence Store","(S3/MinIO)"],dc:cSG,a3:"evidence URL",out:["Annotated Evidence"],oc:cO},
+]);
+
+// 2.4 — 4.0 LPR / OCR
+drawRows("s24",[
+  {src:["Vehicle Frame"],sc:cE,a1:"frame + bbox",pn:"4.1",pl:["Plate","Locator"],a2:"plate region",sid:"PLR",sl:["Plate Regions","(temp)"],dc:cSG,a3:"plate crop",out:["Plate Crop"],oc:cO},
+  {src:["Plate Crop"],sc:cE,a1:"raw crop",pn:"4.2",pl:["Deskew &","Normalize"],a2:"normalized crop",sid:"NCP",sl:["Norm. Crops","(GPU mem)"],dc:cSG,a3:"clean image",out:["Clean Plate Image"],oc:cO},
+  {src:["Clean Plate"],sc:cE,a1:"plate image",pn:"4.3",pl:["PaddleOCR","Recognition"],a2:"raw OCR output",sid:"OCR",sl:["OCR Results","(temp)"],dc:cSG,a3:"char sequence",out:["Raw Text"],oc:cO},
+  {src:["Raw Text"],sc:cE,a1:"raw text string",pn:"4.4",pl:["Text","Normalizer"],a2:"plate + confidence",sid:"D3",sl:["Plates DB","(PostgreSQL)"],dc:cSG,a3:"plate number",out:["Plate Number"],oc:cO},
+]);
+
+// 2.5 — 5.0 Congestion Analytics
+drawRows("s25",[
+  {src:["Detections"],sc:cE,a1:"bounding boxes",pn:"5.1",pl:["Density","Counter"],a2:"vehicle count/m²",sid:"DC",sl:["Density Cache","(Redis)"],dc:cSG,a3:"density",out:["Vehicle Density"],oc:cO},
+  {src:["Count + Road Mask"],sc:cE,a1:"count + area",pn:"5.2",pl:["Occupancy","Calculator"],a2:"occupancy %",sid:"OC",sl:["Occupancy Cache","(Redis)"],dc:cSG,a3:"ratio",out:["Occupancy Ratio"],oc:cO},
+  {src:["Vehicle Tracks"],sc:cE,a1:"track speeds",pn:"5.3",pl:["Flow Rate","Estimator"],a2:"flow rate",sid:"FC",sl:["Flow Cache","(Redis)"],dc:cSG,a3:"vehicles/min",out:["Flow Rate"],oc:cO},
+  {src:["Density+Occ+Flow"],sc:cE,a1:"3 weighted components",pn:"5.4",pl:["Congestion","Scorer"],a2:"congestion metric",sid:"D4",sl:["Congestion DB","(Timescale)"],dc:cSO,a3:"score 0–100",out:["Score 0–100"],oc:cO},
+]);
+
+// 2.6 — 6.0 Hotspot Prediction
+drawRows("s26",[
+  {src:["Violations +","Congestion"],sc:cE,a1:"historical data",pn:"6.1",pl:["Feature","Builder"],a2:"feature vector",sid:"FS",sl:["Feature Store","(temp)"],dc:cSG,a3:"features",out:["Feature Vector"],oc:cO},
+  {src:["Feature Vector"],sc:cE,a1:"training features",pn:"6.2",pl:["Model Training","(nightly)"],a2:"trained weights",sid:"MR",sl:["Model Registry","(versioned)"],dc:cSP,a3:"model artifact",out:["Trained Model"],oc:cO},
+  {src:["Feature Vector"],sc:cE,a1:"live features",pn:"6.3",pl:["Hotspot","Predictor"],a2:"hotspot probability",sid:"D5",sl:["Predictions DB","(PostgreSQL)"],dc:cSG,a3:"probabilities",out:["Hotspot Probs"],oc:cO},
+  {src:["Predictions"],sc:cE,a1:"probs + history",pn:"6.4",pl:["Recommendation","Engine"],a2:"ranked actions",sid:"RC",sl:["Reco Cache","(Redis)"],dc:cSG,a3:"recommendations",out:["Enforcement Actions"],oc:cO},
+]);
+
+// 2.7 — 7.0 LLM Reporting
+drawRows("s27",[
+  {src:["Violations +","Congestion + Hotspots"],sc:cE,a1:"structured data",pn:"7.1",pl:["Data","Aggregator"],a2:"report context",sid:"CTX",sl:["Context Store","(temp)"],dc:cSG,a3:"structured JSON",out:["Structured JSON"],oc:cO},
+  {src:["Structured JSON"],sc:cE,a1:"input data",pn:"7.2",pl:["Prompt","Builder"],a2:"prompt message",sid:"PC",sl:["Prompt Cache","(ephemeral)"],dc:cSO,a3:"formatted prompt",out:["Formatted Prompt"],oc:cO},
+  {src:["Formatted Prompt"],sc:cE,a1:"API request",pn:"7.3",pl:["Claude API","(claude-opus-4-8)"],a2:"AI response",sid:"RW",sl:["Raw Report","(temp)"],dc:cSG,a3:"draft report",out:["AI Response"],oc:cO},
+  {src:["AI Response"],sc:cE,a1:"draft + source refs",pn:"7.4",pl:["Grounding","Validator"],a2:"grounded report",sid:"D6",sl:["Reports DB","(PostgreSQL)"],dc:cSP,a3:"final report",out:["Enforcement Report"],oc:cO},
+]);
+
+// 2.8 — 8.0 Dashboard & API
+drawRows("s28",[
+  {src:["Login","Credentials"],sc:cE,a1:"email + password",pn:"8.1",pl:["Auth &","RBAC"],a2:"session record",sid:"D7",sl:["Users &","Sessions DB"],dc:cSG,a3:"JWT token",out:["Auth Token"],oc:cO},
+  {src:["API Request","+ JWT"],sc:cE,a1:"request + token",pn:"8.2",pl:["REST API","Handler"],a2:"cached response",sid:"RC",sl:["Redis Cache","(hot data)"],dc:cSG,a3:"JSON response",out:["Dashboard Data"],oc:cO},
+  {src:["Violation Event","(live)"],sc:cE,a1:"live event",pn:"8.3",pl:["WebSocket","Manager"],a2:"pub/sub message",sid:"PS",sl:["Redis Pub/Sub","(real-time)"],dc:cSG,a3:"live alert",out:["Live Alert Push"],oc:cO},
+  {src:["Report Request"],sc:cE,a1:"report ID + format",pn:"8.4",pl:["Export","Builder"],a2:"export data fetch",sid:"D6E",sl:["Reports DB","(read)"],dc:cSP,a3:"PDF / CSV file",out:["PDF / CSV"],oc:cO},
+]);
+</script>
+</body>
+</html>

@@ -67,8 +67,9 @@ It ingests traffic-camera images and video, detects illegally parked vehicles us
 | 05 | [05-implementation-plan.md](05-implementation-plan.md) | Phased roadmap, repo layout, testing, CI/CD, risks |
 | 06 | [06-api-specification.md](06-api-specification.md) | REST + WebSocket endpoint contracts |
 | 07 | [07-data-and-ml-models.md](07-data-and-ml-models.md) | Datasets, models, training, eval metrics, Claude prompts |
+| — | [data-flow-diagram.html](data-flow-diagram.html) | **Leveled DFDs** (Level 0 context · Level 1 overview · Level 2 × 8 sub-process decompositions) — open in any browser |
 
-All architecture/ER/sequence diagrams are written as **Mermaid** code blocks (render natively on GitHub). Mermaid sources are mirrored under [diagrams/](diagrams/).
+All architecture/ER/sequence diagrams are written as **Mermaid** code blocks (render natively on GitHub). Mermaid sources are mirrored under [diagrams/](diagrams/). A standalone, self-contained **Data Flow Diagram** is provided as [data-flow-diagram.html](data-flow-diagram.html) — double-click to open it in a browser (no internet or build step required; use its Print button to save as PDF).
 
 ## 6. Glossary
 

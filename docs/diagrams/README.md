@@ -19,5 +19,8 @@ All architecture, ER, and sequence diagrams are authored inline as **Mermaid** c
 | Dashboard information architecture | [04-page-structure §1](../04-page-structure-and-ui.md#1-information-architecture) |
 | Phased roadmap | [05-implementation-plan §1](../05-implementation-plan.md#1-phased-roadmap) |
 | CI/CD pipeline | [05-implementation-plan §4](../05-implementation-plan.md#4-cicd--deployment) |
+| **Data Flow Diagrams (Level 0 + Level 1 + Level 2 × 8)** — interactive HTML | [../data-flow-diagram.html](../data-flow-diagram.html) |
+
+> The Data Flow Diagram is a standalone, self-contained HTML file (HTML/CSS nodes + a JS-rendered SVG connector layer, no dependencies). Open it directly in a browser; it works offline and prints to PDF.
 
 If standalone `.mmd` source files are extracted later for a static-site build, place them here mirroring the section names above.
