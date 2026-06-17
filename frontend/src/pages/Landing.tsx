@@ -51,8 +51,8 @@ export default function Landing() {
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <Link to="/login" className="btn-secondary" style={{ fontSize: '0.875rem', padding: '0.4rem 0.875rem' }}>Sign In</Link>
-            <Link to="/app/dashboard" className="btn-primary" style={{ fontSize: '0.875rem', padding: '0.4rem 0.875rem', display: 'flex', alignItems: 'center', gap: 6 }}>
-              Dashboard <ArrowRight size={14} />
+            <Link to="/register" className="btn-primary" style={{ fontSize: '0.875rem', padding: '0.4rem 0.875rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+              Sign Up <ArrowRight size={14} />
             </Link>
           </div>
         </div>
@@ -80,10 +80,10 @@ export default function Landing() {
             ParkIQ uses computer vision, license plate recognition, and Claude AI to detect illegal parking, quantify congestion impact, and enable data-driven enforcement in real time.
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', marginBottom: '3rem' }}>
-            <Link to="/app/dashboard" className="btn-primary" style={{ padding: '0.7rem 2rem', fontSize: '1rem', boxShadow: '0 4px 14px rgba(30,60,10,0.25)' }}>
-              Open Dashboard <ArrowRight size={16} />
+            <Link to="/register" className="btn-primary" style={{ padding: '0.7rem 2rem', fontSize: '1rem', boxShadow: '0 4px 14px rgba(30,60,10,0.25)', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              Get Started <ArrowRight size={16} />
             </Link>
-            <a href="#features" className="btn-secondary" style={{ padding: '0.7rem 2rem', fontSize: '1rem' }}>Explore Features</a>
+            <Link to="/login" className="btn-secondary" style={{ padding: '0.7rem 2rem', fontSize: '1rem' }}>Sign In</Link>
           </div>
 
           {/* Stats */}
@@ -175,10 +175,10 @@ export default function Landing() {
             Sign in to the demo dashboard and explore live violation detection, heatmaps, AI reports, and predictive patrol recommendations.
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
-            <Link to="/app/dashboard" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#fff', color: 'var(--primary)', fontWeight: 700, padding: '0.75rem 2rem', borderRadius: 12, fontSize: '1rem', transition: 'var(--transition)', textDecoration: 'none' }}
+            <Link to="/register" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#fff', color: 'var(--primary)', fontWeight: 700, padding: '0.75rem 2rem', borderRadius: 12, fontSize: '1rem', transition: 'var(--transition)', textDecoration: 'none' }}
               onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-subtle)'}
               onMouseLeave={e => e.currentTarget.style.background = '#fff'}
-            >Open Dashboard <ArrowRight size={16} /></Link>
+            >Create Account <ArrowRight size={16} /></Link>
             <Link to="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.15)', color: '#fff', fontWeight: 600, padding: '0.75rem 2rem', borderRadius: 12, fontSize: '1rem', border: '1px solid rgba(255,255,255,0.25)', transition: 'var(--transition)', textDecoration: 'none' }}
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.22)'}
               onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.15)'}
@@ -199,7 +199,7 @@ export default function Landing() {
             <span>— AI-Powered Smart Parking Intelligence</span>
           </div>
           <div style={{ display: 'flex', gap: 16 }}>
-            {[['Login','/login'],['Dashboard','/app/dashboard'],['API Docs','/api/docs']].map(([l,h]) => (
+            {[['Sign In','/login'],['Register','/register'],['Dashboard','/app/dashboard'],['API Docs','/api/docs']].map(([l,h]) => (
               <a key={l} href={h} style={{ color: 'var(--text-muted)', textDecoration: 'none', transition: 'color 0.15s' }}
                 onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
                 onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}

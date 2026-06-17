@@ -15,6 +15,7 @@ import Cameras from './pages/Cameras'
 import Zones from './pages/Zones'
 import Search from './pages/Search'
 import History from './pages/History'
+import Register from './pages/Register'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth()
@@ -34,7 +35,8 @@ export default function App() {
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login"    element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route
           path="/app"
           element={

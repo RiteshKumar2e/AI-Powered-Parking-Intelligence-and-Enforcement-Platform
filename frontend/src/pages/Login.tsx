@@ -22,7 +22,21 @@ export default function Login() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg-page)' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg-page)', position: 'relative' }}>
+      {/* Back to home — top-left */}
+      <Link to="/" style={{
+        position: 'fixed', top: 16, left: 16, zIndex: 100,
+        display: 'inline-flex', alignItems: 'center', gap: 6,
+        fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)',
+        background: 'var(--bg-card)', border: '1px solid var(--border-light)',
+        padding: '6px 12px', borderRadius: 9999, textDecoration: 'none',
+        boxShadow: 'var(--shadow-sm)', transition: 'var(--transition)',
+      }}
+        onMouseEnter={e => { e.currentTarget.style.color = 'var(--primary)'; e.currentTarget.style.borderColor = 'var(--primary)' }}
+        onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-light)' }}
+      >
+        <ArrowLeft size={13} /> Back to home
+      </Link>
       {/* Left decorative panel */}
       <div style={{
         width: 400, display: 'none', flexShrink: 0,
@@ -57,13 +71,6 @@ export default function Login() {
       {/* Right login panel */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
         <div style={{ width: '100%', maxWidth: 360 }}>
-          <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: 28, textDecoration: 'none', transition: 'var(--transition)' }}
-            onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
-            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
-          >
-            <ArrowLeft size={14} /> Back to home
-          </Link>
-
           <div style={{ textAlign: 'center', marginBottom: 28 }}>
             <div style={{ width: 56, height: 56, background: 'var(--primary)', borderRadius: 16, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(30,60,10,0.25)', marginBottom: 14 }}>
               <Shield size={26} color="#fff" />
@@ -92,7 +99,12 @@ export default function Login() {
               </button>
             </form>
 
-            <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--border-light)' }}>
+            <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 16 }}>
+              Don't have an account?{' '}
+              <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'none' }}>Register</Link>
+            </p>
+
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--border-light)' }}>
               <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 8 }}>Demo credentials</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
                 {[['admin','admin123'],['officer1','officer123'],['analyst1','analyst123'],['viewer1','viewer123']].map(([u, p]) => (
