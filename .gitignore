@@ -1,0 +1,32 @@
+# Dataset (large CSV — do not commit)
+backend/jan to may police violation_anonymized791b166 (1).csv
+
+# ML model artifacts (regenerate with train_model.py)
+backend/app/ml_models/*.pkl
+backend/app/ml_models/meta.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Database
+*.db
+*.sqlite3
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# Misc
+.DS_Store
+Thumbs.db
+*.log
