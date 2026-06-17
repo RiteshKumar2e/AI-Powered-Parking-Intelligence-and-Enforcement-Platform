@@ -13,7 +13,7 @@ from app.services.ingestion import process_frame
 router = APIRouter(prefix="/cameras", tags=["Cameras"])
 
 
-@router.get("/", response_model=List[CameraOut])
+@router.get("", response_model=List[CameraOut])
 def list_cameras(
     status: Optional[str] = None,
     db: Session = Depends(get_db),
@@ -32,7 +32,7 @@ def list_cameras(
     return result
 
 
-@router.post("/", response_model=CameraOut, status_code=201)
+@router.post("", response_model=CameraOut, status_code=201)
 def create_camera(
     payload: CameraCreate,
     db: Session = Depends(get_db),

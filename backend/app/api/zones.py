@@ -11,7 +11,7 @@ from app.schemas.zone import ZoneCreate, ZoneUpdate, ZoneOut
 router = APIRouter(prefix="/zones", tags=["Zones"])
 
 
-@router.get("/", response_model=List[ZoneOut])
+@router.get("", response_model=List[ZoneOut])
 def list_zones(
     zone_type: Optional[str] = None,
     is_active: Optional[bool] = None,
@@ -33,7 +33,7 @@ def list_zones(
     return result
 
 
-@router.post("/", response_model=ZoneOut, status_code=201)
+@router.post("", response_model=ZoneOut, status_code=201)
 def create_zone(
     payload: ZoneCreate,
     db: Session = Depends(get_db),

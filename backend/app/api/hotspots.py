@@ -21,7 +21,7 @@ def get_heatmap(
     return {"points": data, "count": len(data), "period_hours": hours_back}
 
 
-@router.get("/")
+@router.get("")
 def list_hotspots(
     hours_back: int = Query(24, ge=1, le=168),
     min_severity: int = Query(1, ge=1, le=5),
@@ -33,12 +33,20 @@ def list_hotspots(
     since = datetime.utcnow() - timedelta(hours=hours_back)
     hotspots = (
         db.query(Hotspot)
-        .filter(Hotspot.period_start >= since)
+        .filter(Hotspot.computed_at >= since)
         .filter(Hotspot.severity_level >= min_severity)
         .order_by(Hotspot.severity_level.desc(), Hotspot.violation_count.desc())
         .limit(100)
         .all()
     )
+    if not hotspots:
+        hotspots = (
+            db.query(Hotspot)
+            .filter(Hotspot.severity_level >= min_severity)
+            .order_by(Hotspot.severity_level.desc(), Hotspot.violation_count.desc())
+            .limit(100)
+            .all()
+        )
     return {"hotspots": hotspots, "total": len(hotspots)}
 
 

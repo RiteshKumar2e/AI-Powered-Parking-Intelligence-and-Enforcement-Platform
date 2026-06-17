@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import type { LucideIcon } from 'lucide-react'
 
 interface Props {
@@ -7,30 +6,36 @@ interface Props {
   change?: string
   changePositive?: boolean
   icon: LucideIcon
-  color?: 'blue' | 'red' | 'yellow' | 'green'
+  color?: 'blue' | 'red' | 'yellow' | 'green' | 'amber'
 }
 
-const colorMap = {
-  blue: 'bg-blue-500/10 text-blue-400',
-  red: 'bg-red-500/10 text-red-400',
-  yellow: 'bg-yellow-500/10 text-yellow-400',
-  green: 'bg-green-500/10 text-green-400',
+const iconBg = {
+  blue:   { background: '#dbeafe', color: '#1d4ed8' },
+  red:    { background: '#fee2e2', color: '#dc2626' },
+  yellow: { background: 'var(--accent-light)', color: 'var(--accent)' },
+  amber:  { background: 'var(--accent-light)', color: 'var(--accent)' },
+  green:  { background: 'var(--primary-soft)', color: 'var(--primary)' },
 }
 
-export default function StatCard({ title, value, change, changePositive, icon: Icon, color = 'blue' }: Props) {
+export default function StatCard({ title, value, change, changePositive, icon: Icon, color = 'green' }: Props) {
+  const ic = iconBg[color] ?? iconBg.green
   return (
-    <div className="card">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">{title}</p>
-          <p className="text-2xl font-bold text-white mt-1">{value}</p>
+    <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>{title}</p>
+          <p style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-heading)', margin: '4px 0 0' }}>{value}</p>
           {change && (
-            <p className={clsx('text-xs mt-1', changePositive ? 'text-green-400' : 'text-red-400')}>
+            <p style={{ fontSize: '0.75rem', fontWeight: 600, marginTop: 3, color: changePositive ? 'var(--success)' : 'var(--danger)' }}>
               {change}
             </p>
           )}
         </div>
-        <div className={clsx('p-2.5 rounded-lg', colorMap[color])}>
+        <div style={{
+          width: 44, height: 44, borderRadius: 12, flexShrink: 0, marginLeft: 12,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: ic.background, color: ic.color,
+        }}>
           <Icon size={20} />
         </div>
       </div>

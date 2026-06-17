@@ -1,21 +1,17 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Filter, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react'
+import { Filter, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getViolations, getViolationStats } from '../api'
 import { StatusBadge } from '../components/ViolationBadge'
 import { format } from 'date-fns'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import type { Violation } from '../types'
 
-const VIOLATION_TYPES = [
-  'illegal_parking','no_parking_zone','double_parking','blocking_intersection',
-  'pavement_parking','bus_stop_parking','wrong_side_driving','red_light_violation',
-  'stop_line_violation','helmet_non_compliance','seatbelt_non_compliance','triple_riding',
-]
-
-const STATUS_OPTIONS = ['pending_review','confirmed','dismissed','ticket_issued']
-const COLORS = ['#3b82f6','#ef4444','#f59e0b','#22c55e','#8b5cf6','#ec4899','#14b8a6','#f97316']
+const VTYPES = ['illegal_parking','no_parking_zone','double_parking','blocking_intersection','pavement_parking','bus_stop_parking','wrong_side_driving','red_light_violation','stop_line_violation','helmet_non_compliance','seatbelt_non_compliance','triple_riding']
+const STATUSES = ['pending_review','confirmed','dismissed','ticket_issued']
+const PIE_COLORS = ['#3E6B1A','#C8900A','#2563EB','#16A34A','#7C3AED','#DB2777','#0891B2','#EA580C']
+const tt = { background: '#fff', border: '1px solid var(--border-light)', borderRadius: 10, color: 'var(--text-body)', fontSize: 11 }
 
 export default function Violations() {
   const [page, setPage] = useState(1)
@@ -25,61 +21,44 @@ export default function Violations() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['violations', page, status, vtype, hoursBack],
-    queryFn: () => getViolations({
-      page, size: 20,
-      ...(status && { status }),
-      ...(vtype && { violation_type: vtype }),
-      ...(hoursBack && { hours_back: hoursBack }),
-    }),
+    queryFn: () => getViolations({ page, size: 20, ...(status && { status }), ...(vtype && { violation_type: vtype }), ...(hoursBack && { hours_back: hoursBack }) }),
     refetchInterval: 30000,
   })
-
-  const { data: stats } = useQuery({
-    queryKey: ['violation-stats', hoursBack],
-    queryFn: () => getViolationStats(hoursBack ? Number(hoursBack) : 24),
-    refetchInterval: 60000,
-  })
-
-  const pieData = stats ? Object.entries(stats.by_type || {}).map(([name, value]) => ({
-    name: name.replace(/_/g, ' '),
-    value: value as number,
-  })) : []
+  const { data: stats } = useQuery({ queryKey: ['violation-stats', hoursBack], queryFn: () => getViolationStats(hoursBack ? Number(hoursBack) : 24), refetchInterval: 60000 })
+  const pieData = stats ? Object.entries(stats.by_type || {}).map(([name, value]) => ({ name: name.replace(/_/g, ' '), value: value as number })) : []
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-white">Violations</h1>
-          <p className="text-sm text-gray-400">All detected parking and traffic violations</p>
-        </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }} className="animate-fadein">
+      <div>
+        <h1 className="section-title">Violations</h1>
+        <p className="section-sub">All detected parking and traffic violations</p>
       </div>
 
-      {/* Stats + Pie */}
       {stats && (
-        <div className="grid grid-cols-5 gap-4">
-          <div className="card col-span-3 grid grid-cols-3 gap-3">
+        <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: 14 }}>
+          <div className="card" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
             {[
-              { label: 'Total', value: stats.total, color: 'text-white' },
-              { label: 'Pending', value: stats.by_status?.pending_review || 0, color: 'text-yellow-400' },
-              { label: 'Confirmed', value: stats.by_status?.confirmed || 0, color: 'text-blue-400' },
-              { label: 'Issued', value: stats.by_status?.ticket_issued || 0, color: 'text-green-400' },
-              { label: 'Dismissed', value: stats.by_status?.dismissed || 0, color: 'text-gray-400' },
-              { label: 'Avg Impact', value: `${stats.avg_congestion_impact}/100`, color: 'text-orange-400' },
+              { label: 'Total', value: stats.total, color: 'var(--text-heading)' },
+              { label: 'Pending', value: stats.by_status?.pending_review || 0, color: 'var(--accent)' },
+              { label: 'Confirmed', value: stats.by_status?.confirmed || 0, color: '#2563EB' },
+              { label: 'Issued', value: stats.by_status?.ticket_issued || 0, color: 'var(--success)' },
+              { label: 'Dismissed', value: stats.by_status?.dismissed || 0, color: 'var(--text-faint)' },
+              { label: 'Avg Impact', value: `${stats.avg_congestion_impact}/100`, color: '#c45000' },
             ].map(s => (
-              <div key={s.label} className="text-center py-1">
-                <div className={`text-xl font-bold ${s.color}`}>{s.value}</div>
-                <div className="text-xs text-gray-500">{s.label}</div>
+              <div key={s.label} style={{ textAlign: 'center', padding: '0.5rem 0' }}>
+                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: s.color }}>{s.value}</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-faint)', marginTop: 2 }}>{s.label}</div>
               </div>
             ))}
           </div>
-          <div className="card col-span-2">
-            <p className="text-xs text-gray-500 mb-2">By Violation Type</p>
+          <div className="card">
+            <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: 8 }}>By Violation Type</p>
             <ResponsiveContainer width="100%" height={120}>
               <PieChart>
                 <Pie data={pieData} cx="50%" cy="50%" innerRadius={30} outerRadius={50} dataKey="value" paddingAngle={2}>
-                  {pieData.map((_, idx) => <Cell key={idx} fill={COLORS[idx % COLORS.length]} />)}
+                  {pieData.map((_, idx) => <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />)}
                 </Pie>
-                <Tooltip contentStyle={{ background: '#111827', border: '1px solid #1f2937', fontSize: 11 }} />
+                <Tooltip contentStyle={tt} />
                 <Legend iconSize={8} wrapperStyle={{ fontSize: 9 }} />
               </PieChart>
             </ResponsiveContainer>
@@ -88,94 +67,58 @@ export default function Violations() {
       )}
 
       {/* Filters */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <Filter size={15} className="text-gray-500" />
-        <select className="input w-auto" value={status} onChange={e => { setStatus(e.target.value); setPage(1) }}>
-          <option value="">All Statuses</option>
-          {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
-        </select>
-        <select className="input w-auto" value={vtype} onChange={e => { setVtype(e.target.value); setPage(1) }}>
-          <option value="">All Types</option>
-          {VIOLATION_TYPES.map(t => <option key={t} value={t}>{t.replace(/_/g, ' ')}</option>)}
-        </select>
-        <select className="input w-auto" value={hoursBack} onChange={e => { setHoursBack(e.target.value); setPage(1) }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <Filter size={14} style={{ color: 'var(--text-faint)' }} />
+        {[
+          { val: status, set: (v: string) => { setStatus(v); setPage(1) }, opts: STATUSES, placeholder: 'All Statuses' },
+          { val: vtype, set: (v: string) => { setVtype(v); setPage(1) }, opts: VTYPES, placeholder: 'All Types' },
+        ].map((f, i) => (
+          <select key={i} className="input" style={{ width: 'auto' }} value={f.val} onChange={e => f.set(e.target.value)}>
+            <option value="">{f.placeholder}</option>
+            {f.opts.map(o => <option key={o} value={o}>{o.replace(/_/g, ' ')}</option>)}
+          </select>
+        ))}
+        <select className="input" style={{ width: 'auto' }} value={hoursBack} onChange={e => { setHoursBack(e.target.value); setPage(1) }}>
           <option value="">All Time</option>
-          <option value="1">Last 1h</option>
-          <option value="6">Last 6h</option>
-          <option value="24">Last 24h</option>
-          <option value="72">Last 3 days</option>
-          <option value="168">Last 7 days</option>
+          {[['1','Last 1h'],['6','Last 6h'],['24','Last 24h'],['72','Last 3 days'],['168','Last 7 days']].map(([v,l]) => <option key={v} value={v}>{l}</option>)}
         </select>
       </div>
 
-      {/* Table */}
-      <div className="card p-0 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-xs text-gray-500 border-b border-gray-800 bg-gray-800/50">
-              <th className="text-left px-4 py-3">ID</th>
-              <th className="text-left px-4 py-3">Type</th>
-              <th className="text-left px-4 py-3">Vehicle</th>
-              <th className="text-left px-4 py-3">Plate</th>
-              <th className="text-left px-4 py-3">Congestion</th>
-              <th className="text-left px-4 py-3">Status</th>
-              <th className="text-left px-4 py-3">Fine</th>
-              <th className="text-left px-4 py-3">Timestamp</th>
-            </tr>
-          </thead>
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <table style={{ width: '100%', fontSize: '0.875rem' }}>
+          <thead><tr><th className="th">ID</th><th className="th">Type</th><th className="th">Vehicle</th><th className="th">Plate</th><th className="th">Congestion</th><th className="th">Status</th><th className="th">Fine</th><th className="th">Timestamp</th></tr></thead>
           <tbody>
-            {isLoading && (
-              <tr><td colSpan={8} className="text-center text-gray-500 py-8">Loading...</td></tr>
-            )}
+            {isLoading && <tr><td colSpan={8} style={{ textAlign: 'center', color: 'var(--text-faint)', padding: '2rem' }}>Loading…</td></tr>}
             {data?.items.map((v: Violation) => (
               <tr key={v.id} className="table-row">
-                <td className="px-4 py-3">
-                  <Link to={`/violations/${v.id}`} className="text-blue-400 hover:text-blue-300 font-mono">
-                    #{v.id}
-                  </Link>
-                </td>
-                <td className="px-4 py-3 text-gray-200 capitalize">{v.violation_type?.replace(/_/g, ' ')}</td>
-                <td className="px-4 py-3 text-gray-400 capitalize">{v.vehicle_type}</td>
-                <td className="px-4 py-3 font-mono text-gray-200">{v.plate_number ?? '—'}</td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 bg-gray-800 rounded-full h-1.5">
-                      <div
-                        className={`h-1.5 rounded-full ${v.congestion_impact_score > 60 ? 'bg-red-500' : v.congestion_impact_score > 35 ? 'bg-yellow-500' : 'bg-green-500'}`}
-                        style={{ width: `${v.congestion_impact_score}%` }}
-                      />
+                <td style={{ padding: '0.65rem 1rem' }}><Link to={`/app/violations/${v.id}`} style={{ color: 'var(--primary)', fontFamily: 'monospace', fontWeight: 700, textDecoration: 'none' }}>#{v.id}</Link></td>
+                <td style={{ padding: '0.65rem 1rem', color: 'var(--text-body)', textTransform: 'capitalize' }}>{v.violation_type?.replace(/_/g, ' ')}</td>
+                <td style={{ padding: '0.65rem 1rem', color: 'var(--text-muted)', textTransform: 'capitalize' }}>{v.vehicle_type}</td>
+                <td style={{ padding: '0.65rem 1rem', fontFamily: 'monospace', color: 'var(--text-body)' }}>{v.plate_number ?? '—'}</td>
+                <td style={{ padding: '0.65rem 1rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ width: 60, background: 'var(--bg-subtle)', borderRadius: 9999, height: 5, overflow: 'hidden' }}>
+                      <div style={{ height: '100%', borderRadius: 9999, background: v.congestion_impact_score > 60 ? 'var(--danger)' : v.congestion_impact_score > 35 ? 'var(--accent)' : 'var(--success)', width: `${v.congestion_impact_score}%` }} />
                     </div>
-                    <span className="text-xs text-gray-400">{v.congestion_impact_score?.toFixed(0)}</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{v.congestion_impact_score?.toFixed(0)}</span>
                   </div>
                 </td>
-                <td className="px-4 py-3"><StatusBadge status={v.status} /></td>
-                <td className="px-4 py-3 text-gray-300">₹{v.fine_amount?.toFixed(0)}</td>
-                <td className="px-4 py-3 text-gray-500 text-xs">
-                  {v.frame_timestamp ? format(new Date(v.frame_timestamp), 'MMM d, HH:mm') : '—'}
-                </td>
+                <td style={{ padding: '0.65rem 1rem' }}><StatusBadge status={v.status} /></td>
+                <td style={{ padding: '0.65rem 1rem', color: 'var(--text-secondary)', fontWeight: 600 }}>₹{v.fine_amount?.toFixed(0)}</td>
+                <td style={{ padding: '0.65rem 1rem', color: 'var(--text-faint)', fontSize: '0.75rem' }}>{v.frame_timestamp ? format(new Date(v.frame_timestamp), 'MMM d, HH:mm') : '—'}</td>
               </tr>
             ))}
           </tbody>
         </table>
-
-        {/* Pagination */}
         {data && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-800 text-sm">
-            <span className="text-gray-500">{data.total} total violations</span>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="p-1 text-gray-400 hover:text-white disabled:opacity-30"
-              >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', borderTop: '1px solid var(--border-light)' }}>
+            <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>{data.total} total</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', opacity: page === 1 ? 0.3 : 1 }}>
                 <ChevronLeft size={16} />
               </button>
-              <span className="text-gray-400">Page {page} of {data.pages}</span>
-              <button
-                onClick={() => setPage(p => Math.min(data.pages, p + 1))}
-                disabled={page >= data.pages}
-                className="p-1 text-gray-400 hover:text-white disabled:opacity-30"
-              >
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Page {page} of {data.pages}</span>
+              <button onClick={() => setPage(p => Math.min(data.pages, p + 1))} disabled={page >= data.pages} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', opacity: page >= data.pages ? 0.3 : 1 }}>
                 <ChevronRight size={16} />
               </button>
             </div>

@@ -1,74 +1,45 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { MapContainer, TileLayer, CircleMarker, Tooltip, Popup } from 'react-leaflet'
+import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet'
 import { getHeatmap, getHotspots } from '../api'
-import { RiskBadge } from '../components/ViolationBadge'
 import 'leaflet/dist/leaflet.css'
 
-const SEVERITY_COLORS = ['#22c55e', '#84cc16', '#f59e0b', '#f97316', '#ef4444']
-const CENTER: [number, number] = [19.0760, 72.8777]
+const SEV_COLORS = ['#2A7B3A','#65A30D','#D97706','#EA580C','#C42020']
+const CENTER: [number, number] = [19.076, 72.8777]
+const TIME_OPTS = [{ v: 6, l: '6h' },{ v: 12, l: '12h' },{ v: 24, l: '24h' },{ v: 48, l: '2d' },{ v: 168, l: '7d' }]
 
 export default function Heatmap() {
   const [hoursBack, setHoursBack] = useState(24)
-
-  const { data: heatmapData } = useQuery({
-    queryKey: ['heatmap', hoursBack],
-    queryFn: () => getHeatmap(hoursBack),
-    refetchInterval: 60000,
-  })
-
-  const { data: hotspotData } = useQuery({
-    queryKey: ['hotspots', hoursBack],
-    queryFn: () => getHotspots(hoursBack),
-    refetchInterval: 60000,
-  })
-
+  const { data: heatmapData } = useQuery({ queryKey: ['heatmap', hoursBack], queryFn: () => getHeatmap(hoursBack), refetchInterval: 60000 })
+  const { data: hotspotData } = useQuery({ queryKey: ['hotspots', hoursBack], queryFn: () => getHotspots(hoursBack), refetchInterval: 60000 })
   const points = heatmapData?.points ?? []
   const hotspots = hotspotData?.hotspots ?? []
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-white">Violation Heatmap</h1>
-          <p className="text-sm text-gray-400">Spatial distribution of parking violations and congestion hotspots</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">Time range:</span>
-          {[6, 12, 24, 48, 168].map(h => (
-            <button
-              key={h}
-              onClick={() => setHoursBack(h)}
-              className={`px-2 py-1 rounded text-xs font-medium ${hoursBack === h ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}
-            >
-              {h >= 168 ? '7d' : h >= 48 ? '2d' : `${h}h`}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }} className="animate-fadein">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+        <div><h1 className="section-title">Violation Heatmap</h1><p className="section-sub">Spatial distribution of parking violations and congestion hotspots</p></div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginRight: 4 }}>Time range:</span>
+          {TIME_OPTS.map(({ v, l }) => (
+            <button key={v} onClick={() => setHoursBack(v)} style={{ padding: '4px 12px', borderRadius: 8, fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', transition: 'var(--transition)', border: '1.5px solid var(--border-light)', background: hoursBack === v ? 'var(--primary)' : 'var(--bg-card)', color: hoursBack === v ? '#fff' : 'var(--text-secondary)' }}>
+              {l}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        {/* Map */}
-        <div className="col-span-2 card p-0 overflow-hidden" style={{ height: 520 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 14 }}>
+        <div className="card" style={{ padding: 0, overflow: 'hidden', height: 520 }}>
           <MapContainer center={CENTER} zoom={12} style={{ height: '100%', width: '100%' }}>
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; OpenStreetMap contributors'
-            />
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
             {points.map((pt, i) => (
-              <CircleMarker
-                key={i}
-                center={[pt.lat, pt.lng]}
-                radius={Math.max(8, pt.violation_count * 2)}
-                fillColor={SEVERITY_COLORS[Math.min(pt.severity - 1, 4)]}
-                color="transparent"
-                fillOpacity={0.6}
-              >
+              <CircleMarker key={i} center={[pt.lat, pt.lng]} radius={Math.max(8, pt.violation_count * 2)} fillColor={SEV_COLORS[Math.min(pt.severity - 1, 4)]} color="white" weight={1} fillOpacity={0.75}>
                 <Tooltip>
-                  <div className="text-xs">
-                    <div className="font-medium">Severity: {pt.severity}/5</div>
-                    <div>Violations: {pt.violation_count}</div>
-                    <div>Congestion: {(pt.intensity * 100).toFixed(0)}%</div>
+                  <div style={{ fontSize: 12 }}>
+                    <div style={{ fontWeight: 700, color: 'var(--text-heading)' }}>Severity: {pt.severity}/5</div>
+                    <div style={{ color: 'var(--text-muted)' }}>Violations: {pt.violation_count}</div>
+                    <div style={{ color: 'var(--text-muted)' }}>Congestion: {(pt.intensity * 100).toFixed(0)}%</div>
                   </div>
                 </Tooltip>
               </CircleMarker>
@@ -76,46 +47,30 @@ export default function Heatmap() {
           </MapContainer>
         </div>
 
-        {/* Hotspot List */}
-        <div className="card overflow-y-auto" style={{ maxHeight: 520 }}>
-          <h3 className="text-sm font-medium text-gray-300 mb-3">
-            Top Hotspots ({hotspots.length})
-          </h3>
-          {/* Legend */}
-          <div className="flex flex-wrap gap-1 mb-3">
-            {['Low', 'Moderate', 'High', 'Very High', 'Critical'].map((label, i) => (
-              <div key={label} className="flex items-center gap-1 text-xs text-gray-400">
-                <div className="w-2.5 h-2.5 rounded-full" style={{ background: SEVERITY_COLORS[i] }} />
-                {label}
+        <div className="card" style={{ overflowY: 'auto', maxHeight: 520 }}>
+          <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-body)', marginBottom: 12 }}>Top Hotspots ({hotspots.length})</h3>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12, paddingBottom: 12, borderBottom: '1px solid var(--border-light)' }}>
+            {['Low','Moderate','High','Very High','Critical'].map((l, i) => (
+              <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                <div style={{ width: 9, height: 9, borderRadius: '50%', background: SEV_COLORS[i] }} />{l}
               </div>
             ))}
           </div>
-          <div className="space-y-2">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {hotspots.slice(0, 15).map((hs: Record<string, unknown>, idx: number) => (
-              <div key={idx} className="bg-gray-800 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-medium text-gray-200">
-                    {(hs.latitude as number).toFixed(4)}, {(hs.longitude as number).toFixed(4)}
-                  </span>
-                  <span
-                    className="text-xs font-bold"
-                    style={{ color: SEVERITY_COLORS[Math.min((hs.severity_level as number) - 1, 4)] }}
-                  >
-                    Sev {hs.severity_level}
-                  </span>
+              <div key={idx} style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-light)', borderRadius: 10, padding: '0.65rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-body)' }}>{(hs.latitude as number).toFixed(4)}, {(hs.longitude as number).toFixed(4)}</span>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 800, color: SEV_COLORS[Math.min((hs.severity_level as number) - 1, 4)] }}>Sev {hs.severity_level as number}</span>
                 </div>
-                <div className="text-xs text-gray-400">{hs.violation_count} violations · Avg congestion {Number(hs.avg_congestion_score).toFixed(0)}</div>
-                {hs.peak_hour != null && (
-                  <div className="text-xs text-gray-500">Peak hour: {hs.peak_hour}:00</div>
-                )}
-                <div className={`text-xs mt-1 ${hs.trend === 'rising' ? 'text-red-400' : hs.trend === 'falling' ? 'text-green-400' : 'text-gray-500'}`}>
-                  ↑ {hs.trend as string}
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{hs.violation_count as number} violations · Avg {Number(hs.avg_congestion_score).toFixed(0)}/100</div>
+                {hs.peak_hour != null && <div style={{ fontSize: '0.72rem', color: 'var(--text-faint)' }}>Peak: {hs.peak_hour as number}:00</div>}
+                <div style={{ fontSize: '0.72rem', fontWeight: 600, marginTop: 3, color: hs.trend === 'rising' ? 'var(--danger)' : hs.trend === 'falling' ? 'var(--success)' : 'var(--text-faint)' }}>
+                  {hs.trend === 'rising' ? '↑' : hs.trend === 'falling' ? '↓' : '→'} {String(hs.trend ?? 'stable')}
                 </div>
               </div>
             ))}
-            {hotspots.length === 0 && (
-              <p className="text-center text-gray-600 py-4 text-sm">No hotspots in selected period</p>
-            )}
+            {!hotspots.length && <p style={{ textAlign: 'center', color: 'var(--text-faint)', padding: '1rem', fontSize: '0.875rem' }}>No hotspots in selected period</p>}
           </div>
         </div>
       </div>

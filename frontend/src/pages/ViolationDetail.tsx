@@ -28,51 +28,44 @@ export default function ViolationDetail() {
     onError: () => toast.error('Failed to record action'),
   })
 
-  if (isLoading) return <div className="text-gray-400 p-8">Loading violation details...</div>
-  if (!violation) return <div className="text-gray-400 p-8">Violation not found.</div>
+  if (isLoading) return <div style={{ padding: '2rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>Loading violation details...</div>
+  if (!violation) return <div style={{ padding: '2rem', color: 'var(--text-muted)', fontSize: '0.875rem' }}>Violation not found.</div>
 
   const handleAction = (actionType: string) => {
-    actionMutation.mutate({
-      action_type: actionType,
-      notes: notes || undefined,
-      ticket_number: ticketNum || undefined,
-    })
+    actionMutation.mutate({ action_type: actionType, notes: notes || undefined, ticket_number: ticketNum || undefined })
   }
 
   return (
-    <div className="space-y-5 max-w-4xl">
-      <div className="flex items-center gap-3">
-        <Link to="/violations" className="text-gray-400 hover:text-white">
-          <ArrowLeft size={20} />
-        </Link>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 900 }} className="animate-fadein">
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <Link to="/app/violations" style={{ display: 'flex', color: 'var(--text-muted)', transition: 'var(--transition)' }}
+          onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
+          onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+        ><ArrowLeft size={20} /></Link>
         <div>
-          <h1 className="text-xl font-bold text-white">Violation #{violation.id}</h1>
-          <p className="text-sm text-gray-400 capitalize">{violation.violation_type?.replace(/_/g, ' ')}</p>
+          <h1 className="section-title">Violation #{violation.id}</h1>
+          <p className="section-sub" style={{ textTransform: 'capitalize' }}>{violation.violation_type?.replace(/_/g, ' ')}</p>
         </div>
         <StatusBadge status={violation.status} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        {/* Evidence Image */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <div className="card">
-          <h3 className="text-sm font-medium text-gray-300 mb-3">Evidence Image</h3>
+          <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-body)', marginBottom: 12 }}>Evidence Image</h3>
           {violation.annotated_image_url ? (
-            <img
-              src={violation.annotated_image_url}
-              alt="Violation evidence"
-              className="w-full rounded-lg object-cover max-h-64 bg-gray-800"
+            <img src={violation.annotated_image_url} alt="Violation evidence"
+              style={{ width: '100%', borderRadius: 12, objectFit: 'cover', maxHeight: 256, background: 'var(--bg-subtle)' }}
               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
             />
           ) : (
-            <div className="w-full h-48 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500 text-sm">
-              No image available (simulation mode)
+            <div style={{ width: '100%', height: 192, background: 'var(--bg-subtle)', border: '2px dashed var(--border)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-faint)', fontSize: '0.875rem' }}>
+              No image (simulation mode)
             </div>
           )}
         </div>
 
-        {/* Details */}
-        <div className="card space-y-3">
-          <h3 className="text-sm font-medium text-gray-300">Violation Details</h3>
+        <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-body)' }}>Violation Details</h3>
           {[
             { icon: Car, label: 'Vehicle Type', value: violation.vehicle_type },
             { icon: Ticket, label: 'Plate Number', value: violation.plate_number ?? 'Not detected' },
@@ -80,86 +73,65 @@ export default function ViolationDetail() {
             { icon: Clock, label: 'Dwell Time', value: `${Math.round((violation.dwell_seconds ?? 0) / 60)} minutes` },
             { icon: Clock, label: 'Detected At', value: violation.frame_timestamp ? format(new Date(violation.frame_timestamp), 'PPpp') : '—' },
           ].map(({ icon: Icon, label, value }) => (
-            <div key={label} className="flex items-start gap-3">
-              <Icon size={14} className="text-gray-500 mt-0.5 shrink-0" />
+            <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+              <Icon size={14} style={{ color: 'var(--text-faint)', marginTop: 2, flexShrink: 0 }} />
               <div>
-                <div className="text-xs text-gray-500">{label}</div>
-                <div className="text-sm text-gray-200 capitalize">{value}</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-faint)' }}>{label}</div>
+                <div style={{ fontSize: '0.875rem', color: 'var(--text-body)', fontWeight: 500, textTransform: 'capitalize' }}>{value}</div>
               </div>
             </div>
           ))}
-          <div className="pt-2 border-t border-gray-800">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-400">Congestion Impact</span>
-              <span className="font-medium text-orange-400">{violation.congestion_impact_score?.toFixed(1)}/100</span>
-            </div>
-            <div className="flex justify-between text-sm mt-1">
-              <span className="text-gray-400">Fine Amount</span>
-              <span className="font-medium text-white">₹{violation.fine_amount?.toFixed(0)}</span>
-            </div>
-            <div className="flex justify-between text-sm mt-1">
-              <span className="text-gray-400">Detection Confidence</span>
-              <span className="font-medium text-gray-200">{(violation.detection_confidence * 100).toFixed(0)}%</span>
-            </div>
+          <div style={{ paddingTop: 12, borderTop: '1px solid var(--border-light)', display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {[
+              { label: 'Congestion Impact', value: `${violation.congestion_impact_score?.toFixed(1)}/100`, color: '#c45000' },
+              { label: 'Fine Amount', value: `₹${violation.fine_amount?.toFixed(0)}`, color: 'var(--text-heading)' },
+              { label: 'Detection Confidence', value: `${(violation.detection_confidence * 100).toFixed(0)}%`, color: 'var(--text-secondary)' },
+            ].map(({ label, value, color }) => (
+              <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
+                <span style={{ color: 'var(--text-faint)' }}>{label}</span>
+                <span style={{ fontWeight: 600, color }}>{value}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Enforcement Actions */}
       <div className="card">
-        <h3 className="text-sm font-medium text-gray-300 mb-4">Take Enforcement Action</h3>
-        <div className="flex gap-3 mb-3">
-          <input
-            className="input"
-            placeholder="Notes (optional)"
-            value={notes}
-            onChange={e => setNotes(e.target.value)}
-          />
-          <input
-            className="input w-40"
-            placeholder="Ticket # (optional)"
-            value={ticketNum}
-            onChange={e => setTicketNum(e.target.value)}
-          />
+        <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-body)', marginBottom: 16 }}>Take Enforcement Action</h3>
+        <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+          <input className="input" placeholder="Notes (optional)" value={notes} onChange={e => setNotes(e.target.value)} />
+          <input className="input" style={{ width: 176 }} placeholder="Ticket # (optional)" value={ticketNum} onChange={e => setTicketNum(e.target.value)} />
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <button
-            onClick={() => handleAction('confirm')}
-            disabled={actionMutation.isPending}
-            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm"
-          >
-            <CheckCircle size={14} /> Confirm Violation
-          </button>
-          <button
-            onClick={() => handleAction('issue_ticket')}
-            disabled={actionMutation.isPending}
-            className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm"
-          >
-            <Ticket size={14} /> Issue Ticket
-          </button>
-          <button
-            onClick={() => handleAction('dismiss')}
-            disabled={actionMutation.isPending}
-            className="flex items-center gap-1.5 bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-lg text-sm"
-          >
-            <XCircle size={14} /> Dismiss
-          </button>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button onClick={() => handleAction('confirm')} disabled={actionMutation.isPending}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#2563EB', color: '#fff', padding: '8px 16px', borderRadius: 12, fontSize: '0.875rem', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'var(--transition)' }}
+            onMouseEnter={e => e.currentTarget.style.background = '#1D4ED8'}
+            onMouseLeave={e => e.currentTarget.style.background = '#2563EB'}
+          ><CheckCircle size={14} /> Confirm Violation</button>
+          <button onClick={() => handleAction('issue_ticket')} disabled={actionMutation.isPending}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--success)', color: '#fff', padding: '8px 16px', borderRadius: 12, fontSize: '0.875rem', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'var(--transition)' }}
+            onMouseEnter={e => e.currentTarget.style.background = '#1E6030'}
+            onMouseLeave={e => e.currentTarget.style.background = 'var(--success)'}
+          ><Ticket size={14} /> Issue Ticket</button>
+          <button onClick={() => handleAction('dismiss')} disabled={actionMutation.isPending}
+            className="btn-secondary"
+            style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+          ><XCircle size={14} /> Dismiss</button>
         </div>
       </div>
 
-      {/* Action History */}
       {violation.enforcement_actions && violation.enforcement_actions.length > 0 && (
         <div className="card">
-          <h3 className="text-sm font-medium text-gray-300 mb-3">Action History</h3>
-          <div className="space-y-2">
+          <h3 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-body)', marginBottom: 12 }}>Action History</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {violation.enforcement_actions.map((a) => (
-              <div key={a.id} className="flex items-start gap-3 text-sm py-2 border-b border-gray-800 last:border-0">
-                <div className="bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded text-xs capitalize">{a.action_type}</div>
+              <div key={a.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, fontSize: '0.875rem', paddingBottom: 8, borderBottom: '1px solid var(--border-light)' }}>
+                <span style={{ background: 'var(--bg-subtle)', color: 'var(--text-secondary)', border: '1px solid var(--border)', padding: '2px 10px', borderRadius: 9999, fontSize: '0.75rem', fontWeight: 600, textTransform: 'capitalize', flexShrink: 0 }}>{a.action_type}</span>
                 <div>
-                  <div className="text-gray-200">{a.officer}</div>
-                  {a.notes && <div className="text-gray-500 text-xs">{a.notes}</div>}
+                  <div style={{ color: 'var(--text-body)', fontWeight: 500 }}>{a.officer}</div>
+                  {a.notes && <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{a.notes}</div>}
                 </div>
-                <div className="ml-auto text-xs text-gray-500">{a.timestamp ? format(new Date(a.timestamp), 'MMM d, HH:mm') : ''}</div>
+                <div style={{ marginLeft: 'auto', fontSize: '0.72rem', color: 'var(--text-faint)', flexShrink: 0 }}>{a.timestamp ? format(new Date(a.timestamp), 'MMM d, HH:mm') : ''}</div>
               </div>
             ))}
           </div>

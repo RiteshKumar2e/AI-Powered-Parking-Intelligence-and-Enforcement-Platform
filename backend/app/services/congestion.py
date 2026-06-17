@@ -141,7 +141,7 @@ def compute_hotspots(db: Session, hours_back: int = 24) -> List[Hotspot]:
         existing = (
             db.query(Hotspot)
             .filter(Hotspot.latitude == lat, Hotspot.longitude == lng)
-            .filter(Hotspot.period_start >= since)
+            .filter(Hotspot.computed_at >= since)
             .first()
         )
         if existing:
@@ -178,11 +178,19 @@ def get_heatmap_data(db: Session, hours_back: int = 24) -> List[Dict]:
     since = datetime.utcnow() - timedelta(hours=hours_back)
     hotspots = (
         db.query(Hotspot)
-        .filter(Hotspot.period_start >= since)
+        .filter(Hotspot.computed_at >= since)
         .order_by(Hotspot.severity_level.desc())
         .limit(500)
         .all()
     )
+    if not hotspots:
+        # Fallback: return all hotspots regardless of time (e.g., fresh seed data)
+        hotspots = (
+            db.query(Hotspot)
+            .order_by(Hotspot.severity_level.desc())
+            .limit(500)
+            .all()
+        )
     return [
         {
             "lat": h.latitude,

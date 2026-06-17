@@ -16,7 +16,7 @@ def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
-@router.get("/", response_model=List[UserOut])
+@router.get("", response_model=List[UserOut])
 def list_users(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin),

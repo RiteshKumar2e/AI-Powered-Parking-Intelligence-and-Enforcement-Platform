@@ -78,7 +78,7 @@ def seed_database():
             ]
             db.add_all(users)
             db.commit()
-            print(f"✓ Created {len(users)} users")
+            print(f"[OK] Created {len(users)} users")
 
         # --- Cameras ---
         if not db.query(Camera).first():
@@ -90,7 +90,7 @@ def seed_database():
             ]
             db.add_all(cameras)
             db.commit()
-            print(f"✓ Created {len(cameras)} cameras")
+            print(f"[OK] Created {len(cameras)} cameras")
 
         # --- Zones ---
         if not db.query(Zone).first():
@@ -103,7 +103,7 @@ def seed_database():
             ]
             db.add_all(zones)
             db.commit()
-            print(f"✓ Created {len(zones)} zones")
+            print(f"[OK] Created {len(zones)} zones")
 
         # --- Violations (last 7 days) ---
         if not db.query(Violation).first():
@@ -173,7 +173,7 @@ def seed_database():
                         db.add(lp)
 
             db.commit()
-            print(f"✓ Created {violations_created} violations (last 7 days)")
+            print(f"[OK] Created {violations_created} violations (last 7 days)")
 
         # --- Congestion Metrics ---
         if not db.query(CongestionMetric).first():
@@ -202,7 +202,7 @@ def seed_database():
                     db.add(m)
                     metrics_created += 1
             db.commit()
-            print(f"✓ Created {metrics_created} congestion metric snapshots")
+            print(f"[OK] Created {metrics_created} congestion metric snapshots")
 
         # --- Hotspots ---
         if not db.query(Hotspot).first():
@@ -228,9 +228,9 @@ def seed_database():
                 )
                 db.add(hs)
             db.commit()
-            print(f"✓ Created {len(zones)} hotspot records")
+            print(f"[OK] Created {len(zones)} hotspot records")
 
-        print("\n✅ Seed complete!")
+        print("\n[DONE] Seed complete!")
         print("\nLogin credentials:")
         print("  Admin:    admin / admin123")
         print("  Officer:  officer1 / officer123")

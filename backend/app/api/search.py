@@ -12,7 +12,7 @@ from app.api.deps import get_current_user
 router = APIRouter(prefix="/search", tags=["Search"])
 
 
-@router.get("/")
+@router.get("")
 def search(
     q: str = Query(..., min_length=2, description="Search query (plate number, location, etc.)"),
     entity: Optional[str] = Query(None, description="Filter by entity: violations, plates"),

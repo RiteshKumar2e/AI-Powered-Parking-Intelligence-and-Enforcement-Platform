@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
 import Layout from './components/Layout'
+import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import LiveMonitor from './pages/LiveMonitor'
@@ -22,16 +23,17 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route
-          path="/"
+          path="/app"
           element={
             <ProtectedRoute>
               <Layout />
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route index element={<Navigate to="/app/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="monitor" element={<LiveMonitor />} />
           <Route path="violations" element={<Violations />} />
@@ -43,6 +45,16 @@ export default function App() {
           <Route path="zones" element={<Zones />} />
           <Route path="search" element={<Search />} />
         </Route>
+        {/* Legacy /dashboard redirect */}
+        <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
+        <Route path="/monitor" element={<Navigate to="/app/monitor" replace />} />
+        <Route path="/violations" element={<Navigate to="/app/violations" replace />} />
+        <Route path="/heatmap" element={<Navigate to="/app/heatmap" replace />} />
+        <Route path="/predictions" element={<Navigate to="/app/predictions" replace />} />
+        <Route path="/reports" element={<Navigate to="/app/reports" replace />} />
+        <Route path="/cameras" element={<Navigate to="/app/cameras" replace />} />
+        <Route path="/zones" element={<Navigate to="/app/zones" replace />} />
+        <Route path="/search" element={<Navigate to="/app/search" replace />} />
       </Routes>
     </BrowserRouter>
   )

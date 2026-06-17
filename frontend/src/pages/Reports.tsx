@@ -21,10 +21,7 @@ export default function Reports() {
   const [reportType, setReportType] = useState('daily_digest')
   const [generating, setGenerating] = useState(false)
 
-  const { data: reports } = useQuery({
-    queryKey: ['reports'],
-    queryFn: () => getReports(),
-  })
+  const { data: reports } = useQuery({ queryKey: ['reports'], queryFn: () => getReports() })
 
   const createMutation = useMutation({
     mutationFn: createReport,
@@ -44,98 +41,87 @@ export default function Reports() {
   const handleGenerate = () => {
     const now = new Date()
     const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-    createMutation.mutate({
-      report_type: reportType,
-      period_start: dayAgo.toISOString(),
-      period_end: now.toISOString(),
-    })
+    createMutation.mutate({ report_type: reportType, period_start: dayAgo.toISOString(), period_end: now.toISOString() })
   }
 
   return (
-    <div className="space-y-5">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} className="animate-fadein">
       <div>
-        <h1 className="text-xl font-bold text-white">Enforcement Reports</h1>
-        <p className="text-sm text-gray-400">AI-generated reports using Claude LLM analysis</p>
+        <h1 className="section-title">Enforcement Reports</h1>
+        <p className="section-sub">AI-generated reports using Claude LLM analysis</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        {/* Report List */}
-        <div className="card space-y-3">
-          {/* Generate New */}
-          <div className="pb-3 border-b border-gray-800">
-            <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Generate New Report</h3>
-            <select className="input mb-2" value={reportType} onChange={e => setReportType(e.target.value)}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16 }}>
+        <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ paddingBottom: 16, borderBottom: '1px solid var(--border-light)' }}>
+            <h3 style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>Generate New Report</h3>
+            <select className="input" style={{ marginBottom: 8 }} value={reportType} onChange={e => setReportType(e.target.value)}>
               {REPORT_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
-            <button
-              onClick={handleGenerate}
-              disabled={generating}
-              className="btn-primary w-full flex items-center justify-center gap-2"
-            >
-              {generating ? <Loader size={14} className="animate-spin" /> : <Plus size={14} />}
+            <button onClick={handleGenerate} disabled={generating} className="btn-primary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+              {generating ? <Loader size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Plus size={14} />}
               {generating ? 'Generating with Claude...' : 'Generate Report'}
             </button>
           </div>
 
-          {/* Past Reports */}
           <div>
-            <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Past Reports</h3>
-            <div className="space-y-1">
+            <h3 style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Past Reports</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {(reports ?? []).map((r: Report) => (
-                <button
-                  key={r.id}
-                  onClick={() => setSelected(r)}
-                  className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors flex items-center justify-between ${
-                    selected?.id === r.id ? 'bg-blue-600/20 text-blue-400' : 'hover:bg-gray-800 text-gray-300'
-                  }`}
+                <button key={r.id} onClick={() => setSelected(r)} style={{
+                  width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 12, fontSize: '0.875rem', cursor: 'pointer', transition: 'var(--transition)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  background: selected?.id === r.id ? 'var(--primary)' : 'transparent',
+                  color: selected?.id === r.id ? '#fff' : 'var(--text-secondary)',
+                  border: selected?.id === r.id ? '1px solid var(--primary)' : '1px solid transparent',
+                }}
+                  onMouseEnter={e => { if (selected?.id !== r.id) e.currentTarget.style.background = 'var(--bg-subtle)' }}
+                  onMouseLeave={e => { if (selected?.id !== r.id) e.currentTarget.style.background = 'transparent' }}
                 >
-                  <div>
-                    <div className="font-medium text-xs truncate max-w-[160px]">{r.title}</div>
-                    <div className="text-xs text-gray-500 capitalize">{r.report_type?.replace(/_/g, ' ')}</div>
-                    <div className="text-xs text-gray-600">{r.created_at ? format(new Date(r.created_at), 'MMM d, HH:mm') : ''}</div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontWeight: 600, fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 150, color: selected?.id === r.id ? '#fff' : 'var(--text-body)' }}>{r.title}</div>
+                    <div style={{ fontSize: '0.72rem', textTransform: 'capitalize', color: selected?.id === r.id ? 'rgba(255,255,255,0.7)' : 'var(--text-faint)' }}>{r.report_type?.replace(/_/g, ' ')}</div>
+                    <div style={{ fontSize: '0.72rem', color: selected?.id === r.id ? 'rgba(255,255,255,0.5)' : 'var(--text-faint)' }}>{r.created_at ? format(new Date(r.created_at), 'MMM d, HH:mm') : ''}</div>
                   </div>
-                  <ChevronRight size={14} className="text-gray-600 shrink-0" />
+                  <ChevronRight size={14} style={{ color: selected?.id === r.id ? 'rgba(255,255,255,0.6)' : 'var(--text-faint)', flexShrink: 0 }} />
                 </button>
               ))}
               {(!reports || reports.length === 0) && !generating && (
-                <p className="text-xs text-gray-600 text-center py-2">No reports yet. Generate one above.</p>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-faint)', textAlign: 'center', padding: '0.75rem' }}>No reports yet. Generate one above.</p>
               )}
             </div>
           </div>
         </div>
 
-        {/* Report Content */}
-        <div className="card col-span-2 overflow-auto" style={{ maxHeight: 700 }}>
+        <div className="card" style={{ overflowY: 'auto', maxHeight: 700 }}>
           {selected ? (
             <div>
-              <div className="flex items-start justify-between mb-4">
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
                 <div>
-                  <h2 className="text-base font-bold text-white">{selected.title}</h2>
-                  <p className="text-xs text-gray-500 mt-0.5">
+                  <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-heading)', margin: 0 }}>{selected.title}</h2>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--text-faint)', marginTop: 2 }}>
                     {selected.created_at ? format(new Date(selected.created_at), 'PPpp') : ''}
                     {selected.llm_model && ` · ${selected.llm_model}`}
                     {selected.input_tokens ? ` · ${selected.input_tokens + selected.output_tokens} tokens` : ''}
                   </p>
                 </div>
-                <span className="bg-blue-500/10 text-blue-400 text-xs px-2 py-0.5 rounded capitalize">
+                <span style={{ background: 'var(--bg-subtle)', color: 'var(--text-secondary)', border: '1px solid var(--border)', fontSize: '0.72rem', padding: '2px 10px', borderRadius: 9999, fontWeight: 600, textTransform: 'capitalize', flexShrink: 0 }}>
                   {selected.report_type?.replace(/_/g, ' ')}
                 </span>
               </div>
               {selected.summary && (
-                <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-3 mb-4">
-                  <p className="text-sm text-blue-300">{selected.summary}</p>
+                <div style={{ background: 'var(--accent-faint)', border: '1px solid var(--accent-light)', borderRadius: 12, padding: '1rem', marginBottom: 16 }}>
+                  <p style={{ fontSize: '0.875rem', color: 'var(--accent-hover)', lineHeight: 1.6 }}>{selected.summary}</p>
                 </div>
               )}
               {selected.content && (
-                <div className="prose prose-invert prose-sm max-w-none text-gray-300">
-                  <pre className="whitespace-pre-wrap text-sm leading-relaxed font-sans">{selected.content}</pre>
-                </div>
+                <pre style={{ whiteSpace: 'pre-wrap', fontSize: '0.875rem', lineHeight: 1.7, fontFamily: 'inherit', color: 'var(--text-body)', margin: 0 }}>{selected.content}</pre>
               )}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-64 text-gray-600">
-              <FileText size={40} className="mb-3 opacity-30" />
-              <p>Select or generate a report to view</p>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 256, color: 'var(--text-faint)' }}>
+              <FileText size={40} style={{ marginBottom: 12, opacity: 0.3 }} />
+              <p style={{ fontSize: '0.875rem' }}>Select or generate a report to view</p>
             </div>
           )}
         </div>

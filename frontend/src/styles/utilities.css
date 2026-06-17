@@ -1,0 +1,68 @@
+/* ── Color Utilities (CSS variable-based) ───────────────────────
+   Use these instead of custom Tailwind color classes.
+   All layout (flex, grid, p-, m-, etc.) still uses Tailwind.
+   ──────────────────────────────────────────────────────────── */
+
+/* Text */
+.c-heading   { color: var(--text-heading); }
+.c-body      { color: var(--text-body); }
+.c-secondary { color: var(--text-secondary); }
+.c-muted     { color: var(--text-muted); }
+.c-faint     { color: var(--text-faint); }
+.c-primary   { color: var(--primary); }
+.c-accent    { color: var(--accent); }
+.c-white     { color: #ffffff; }
+.c-danger    { color: var(--danger); }
+.c-success   { color: var(--success); }
+.c-warning   { color: var(--warning); }
+.c-info      { color: var(--info); }
+
+/* Background */
+.bg-page        { background: var(--bg-page); }
+.bg-surface     { background: var(--bg-card); }
+.bg-subtle      { background: var(--bg-subtle); }
+.bg-faint       { background: var(--bg-faint); }
+.bg-sidebar     { background: var(--bg-sidebar); }
+.bg-sidebar-active { background: var(--bg-sidebar-active); }
+.bg-primary-solid  { background: var(--primary); color: #fff; }
+.bg-primary-soft   { background: var(--primary-light); }
+.bg-primary-faint  { background: var(--primary-faint); }
+.bg-accent-soft    { background: var(--accent-light); }
+.bg-accent-faint   { background: var(--accent-faint); }
+.bg-success-soft   { background: var(--success-bg); }
+.bg-warning-soft   { background: var(--warning-bg); }
+.bg-danger-soft    { background: var(--danger-bg); }
+.bg-info-soft      { background: var(--info-bg); }
+
+/* Border */
+.b-subtle  { border-color: var(--border-light); }
+.b-default { border-color: var(--border); }
+.b-primary { border-color: var(--primary); }
+.b-accent  { border-color: var(--accent); }
+
+/* Hover backgrounds */
+.hover-subtle:hover    { background: var(--bg-subtle); }
+.hover-faint:hover     { background: var(--bg-faint); }
+.hover-primary:hover   { background: var(--primary-hover); }
+.hover-sidebar:hover   { background: var(--bg-sidebar-hover); }
+.hover-danger:hover    { background: #f8e0e0; color: var(--danger); }
+
+/* Ring/focus */
+.ring-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(62,107,26,0.2);
+}
+
+/* Divider */
+.divider { border-top: 1px solid var(--border-light); }
+
+/* Chip / pill backgrounds for status/risk badges */
+.chip-pending  { background: var(--warning-bg);  color: var(--warning);  border: 1px solid #EACC80; }
+.chip-confirmed { background: var(--info-bg);    color: var(--info);     border: 1px solid #99C0E8; }
+.chip-issued   { background: var(--success-bg);  color: var(--success);  border: 1px solid #88CCAA; }
+.chip-dismissed { background: #f3f4f6;           color: #6b7280;         border: 1px solid #d1d5db; }
+.chip-appealed  { background: #f3e8ff;           color: #7c3aed;         border: 1px solid #c4b5fd; }
+.chip-low       { background: var(--success-bg); color: var(--success);  border: 1px solid #88CCAA; }
+.chip-medium    { background: var(--warning-bg); color: var(--warning);  border: 1px solid #EACC80; }
+.chip-high      { background: #fff0e8;           color: #c45000;         border: 1px solid #f0b888; }
+.chip-critical  { background: var(--danger-bg);  color: var(--danger);   border: 1px solid #EEAAAA; }

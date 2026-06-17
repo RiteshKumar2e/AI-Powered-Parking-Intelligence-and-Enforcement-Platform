@@ -4,7 +4,7 @@ import Header from './Header'
 
 export default function Layout() {
   return (
-    <div className="flex h-screen bg-gray-950 overflow-hidden">
+    <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg-page)' }}>
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />

@@ -1,42 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import './styles/theme.css';
+@import './styles/global.css';
+@import './styles/components.css';
+@import './styles/utilities.css';
+
+/* Tailwind base utilities (layout, spacing, flex, grid only) */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@layer base {
-  body {
-    @apply bg-gray-950 text-gray-100 antialiased;
-  }
-}
-
-@layer components {
-  .card {
-    @apply bg-gray-900 rounded-xl border border-gray-800 p-5;
-  }
-  .badge {
-    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
-  }
-  .btn-primary {
-    @apply bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors;
-  }
-  .btn-secondary {
-    @apply bg-gray-700 hover:bg-gray-600 text-gray-100 px-4 py-2 rounded-lg text-sm font-medium transition-colors;
-  }
-  .btn-danger {
-    @apply bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors;
-  }
-  .input {
-    @apply bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-100
-           focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-full;
-  }
-  .table-row {
-    @apply border-b border-gray-800 hover:bg-gray-800/50 transition-colors;
-  }
-}
-
-/* Leaflet dark mode overrides */
-.leaflet-container {
-  background: #1a1a2e;
-}
-.leaflet-tile {
-  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
-}

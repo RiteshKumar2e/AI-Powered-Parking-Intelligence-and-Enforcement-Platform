@@ -10,7 +10,7 @@ from app.api.deps import get_current_user, require_officer_or_admin
 router = APIRouter(prefix="/plates", tags=["License Plates"])
 
 
-@router.get("/")
+@router.get("")
 def list_plates(
     needs_review: Optional[bool] = None,
     plate_text: Optional[str] = None,

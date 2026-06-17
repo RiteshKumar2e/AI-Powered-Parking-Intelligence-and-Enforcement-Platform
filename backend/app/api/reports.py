@@ -14,7 +14,7 @@ from app.services.reporting import generate_report_with_llm
 router = APIRouter(prefix="/reports", tags=["Reports"])
 
 
-@router.get("/", response_model=List[ReportOut])
+@router.get("", response_model=List[ReportOut])
 def list_reports(
     report_type: Optional[str] = None,
     page: int = Query(1, ge=1),
@@ -30,7 +30,7 @@ def list_reports(
     return items
 
 
-@router.post("/", response_model=ReportOut, status_code=201)
+@router.post("", response_model=ReportOut, status_code=201)
 def create_report(
     payload: ReportCreateRequest,
     db: Session = Depends(get_db),
