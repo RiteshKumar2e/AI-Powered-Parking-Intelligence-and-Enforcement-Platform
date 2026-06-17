@@ -99,11 +99,39 @@ class VehicleDetector:
         if not simulate:
             self._load_model(model_path)
 
+    def _resolve_model_path(self, model_path: str) -> str:
+        """
+        Check local paths first so the model works offline after first download.
+        Search order:
+          1. Exact path as given (absolute or relative to cwd)
+          2. backend/models/<name>
+          3. Let ultralytics resolve (downloads if missing)
+        """
+        from pathlib import Path
+        p = Path(model_path)
+        if p.is_absolute() and p.exists():
+            return str(p)
+
+        name = p.name
+        candidates = [
+            p,                                                    # as-is (relative)
+            Path(__file__).parent.parent.parent / "models" / name,  # backend/models/
+            Path(__file__).parent / "models" / name,
+        ]
+        for c in candidates:
+            if c.exists():
+                logger.info("YOLO model found locally: %s", c)
+                return str(c)
+
+        logger.info("YOLO model not found locally — ultralytics will download: %s", name)
+        return name   # let ultralytics handle download + cache
+
     def _load_model(self, model_path: str):
         try:
             from ultralytics import YOLO
-            self.model = YOLO(model_path)
-            logger.info("YOLO model loaded: %s", model_path)
+            resolved = self._resolve_model_path(model_path)
+            self.model = YOLO(resolved)
+            logger.info("YOLO model loaded: %s", resolved)
         except Exception as e:
             logger.warning("YOLO load failed (%s) — simulation mode", e)
             self.simulate = True
