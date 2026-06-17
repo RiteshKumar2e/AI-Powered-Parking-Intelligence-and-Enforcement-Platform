@@ -14,6 +14,7 @@ import Reports from './pages/Reports'
 import Cameras from './pages/Cameras'
 import Zones from './pages/Zones'
 import Search from './pages/Search'
+import History from './pages/History'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth()
@@ -50,6 +51,7 @@ export default function App() {
           <Route path="violations/:id" element={<ViolationDetail />} />
           <Route path="heatmap"    element={<Heatmap />} />
           <Route path="search"     element={<Search />} />
+          <Route path="history"    element={<History />} />
 
           {/* Admin + Officer */}
           <Route path="monitor" element={

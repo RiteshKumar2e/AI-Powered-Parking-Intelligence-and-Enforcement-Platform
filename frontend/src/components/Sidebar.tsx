@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Video, AlertTriangle, Map, TrendingUp,
-  FileText, Camera, MapPin, Search, Shield, LogOut
+  FileText, Camera, MapPin, Search, Shield, LogOut, History
 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import type { UserRole } from '../types'
@@ -16,6 +16,7 @@ type NavItem = {
 const nav: NavItem[] = [
   { to: '/app/dashboard',    icon: LayoutDashboard, label: 'Dashboard',    roles: ['admin', 'officer', 'analyst', 'viewer'] },
   { to: '/app/monitor',      icon: Video,           label: 'Live Monitor', roles: ['admin', 'officer'] },
+  { to: '/app/history',      icon: History,         label: 'History',      roles: ['admin', 'officer', 'analyst', 'viewer'] },
   { to: '/app/violations',   icon: AlertTriangle,   label: 'Violations',   roles: ['admin', 'officer', 'analyst', 'viewer'] },
   { to: '/app/heatmap',      icon: Map,             label: 'Heatmap',      roles: ['admin', 'officer', 'analyst', 'viewer'] },
   { to: '/app/predictions',  icon: TrendingUp,      label: 'Predictions',  roles: ['admin', 'analyst'] },

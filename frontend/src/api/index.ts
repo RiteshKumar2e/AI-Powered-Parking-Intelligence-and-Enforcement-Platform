@@ -106,3 +106,10 @@ export const getPlates = (params: Record<string, unknown> = {}) =>
 
 export const verifyPlate = (id: number, correctedText?: string) =>
   apiClient.patch(`/plates/${id}/verify`, null, { params: { corrected_text: correctedText } }).then(r => r.data)
+
+// History
+export const getHistory = (params: { camera_id?: number; limit?: number; offset?: number } = {}) =>
+  apiClient.get('/history', { params }).then(r => r.data)
+
+export const deleteHistoryLog = (id: number) =>
+  apiClient.delete(`/history/${id}`)

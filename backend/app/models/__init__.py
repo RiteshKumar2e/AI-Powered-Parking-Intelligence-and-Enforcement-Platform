@@ -10,6 +10,7 @@ from app.models.report import Report, ReportType
 from app.models.evidence import Evidence, EvidenceType
 from app.models.enforcement_action import EnforcementAction, ActionType
 from app.models.detection import Detection
+from app.models.frame_log import FrameLog
 
 __all__ = [
     "User", "UserRole",
@@ -24,4 +25,5 @@ __all__ = [
     "Evidence", "EvidenceType",
     "EnforcementAction", "ActionType",
     "Detection",
+    "FrameLog",
 ]

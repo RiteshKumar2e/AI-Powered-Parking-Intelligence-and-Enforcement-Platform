@@ -15,6 +15,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from app.models.camera import Camera
 from app.models.violation import Violation
+from app.models.frame_log import FrameLog
 from app.ml.detector import get_detector, DetectionResult
 from app.ml.ocr import get_ocr
 from app.ml.tracker import VehicleTracker
@@ -257,14 +258,31 @@ def process_frame(
 
     # Update camera last_active
     camera.last_active = datetime.utcnow()
+
+    # Save frame processing history
+    log_entry = FrameLog(
+        camera_id           = camera.id,
+        camera_name         = camera.name,
+        frame_number        = frame_number,
+        processed_at        = frame_timestamp,
+        vehicle_count       = len(detections),
+        parked_count        = sum(1 for d in detections if d.is_parked),
+        violations_created  = len(new_violations),
+        congestion_score    = congestion.congestion_score,
+        original_image_url  = orig_url,
+        annotated_image_url = ann_url,
+        violation_ids       = [v.id for v in new_violations],
+    )
+    db.add(log_entry)
     db.commit()
 
     return {
-        "frame_number": frame_number,
-        "vehicle_count": len(detections),
-        "parked_count": sum(1 for d in detections if d.is_parked),
+        "frame_number":       frame_number,
+        "vehicle_count":      len(detections),
+        "parked_count":       sum(1 for d in detections if d.is_parked),
         "violations_created": len(new_violations),
-        "violation_ids": [v.id for v in new_violations],
-        "congestion_score": congestion.congestion_score,
+        "violation_ids":      [v.id for v in new_violations],
+        "congestion_score":   congestion.congestion_score,
         "annotated_image_url": ann_url,
+        "log_id":             log_entry.id,
     }

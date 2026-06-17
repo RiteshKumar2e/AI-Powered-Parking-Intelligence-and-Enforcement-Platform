@@ -16,6 +16,7 @@ TABLES_TO_CLEAR = [
     "license_plates",
     "enforcement_actions",
     "detections",
+    "frame_logs",
     "violations",
     "congestion_metrics",
     "hotspots",
