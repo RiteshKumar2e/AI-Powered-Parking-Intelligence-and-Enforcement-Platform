@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Shield, Eye, EyeOff, ArrowLeft, UserPlus, Check } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { useAuth } from '../hooks/useAuth'
 import toast from 'react-hot-toast'
 import apiClient from '../api/client'
@@ -82,18 +83,19 @@ export default function Register() {
   if (done) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-page)', padding: '1.5rem' }}>
-        <div style={{ textAlign: 'center', maxWidth: 360 }}>
-          <div style={{ width: 72, height: 72, background: '#DCFCE7', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+        <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} style={{ textAlign: 'center', maxWidth: 360 }}>
+          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 280, damping: 18, delay: 0.15 }}
+            style={{ width: 72, height: 72, background: '#DCFCE7', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
             <Check size={32} style={{ color: '#16A34A' }} />
-          </div>
+          </motion.div>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-heading)', margin: '0 0 8px' }}>Account created!</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: 24 }}>
             Your account <strong>{form.username}</strong> has been registered as <strong>{form.role}</strong>.
           </p>
-          <button className="btn-primary" style={{ width: '100%', padding: '0.7rem' }} onClick={() => navigate('/login')}>
+          <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="btn-primary" style={{ width: '100%', padding: '0.7rem' }} onClick={() => navigate('/login')}>
             Go to Sign In
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </div>
     )
   }
@@ -101,19 +103,20 @@ export default function Register() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg-page)', position: 'relative' }}>
       {/* Back to home — top-left */}
-      <Link to="/" style={{
-        position: 'fixed', top: 16, left: 16, zIndex: 100,
-        display: 'inline-flex', alignItems: 'center', gap: 6,
-        fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)',
-        background: 'var(--bg-card)', border: '1px solid var(--border-light)',
-        padding: '6px 12px', borderRadius: 9999, textDecoration: 'none',
-        boxShadow: 'var(--shadow-sm)', transition: 'var(--transition)',
-      }}
-        onMouseEnter={e => { e.currentTarget.style.color = 'var(--primary)'; e.currentTarget.style.borderColor = 'var(--primary)' }}
-        onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-light)' }}
-      >
-        <ArrowLeft size={13} /> Back to home
-      </Link>
+      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }} style={{ position: 'fixed', top: 16, left: 16, zIndex: 100 }}>
+        <Link to="/" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)',
+          background: 'var(--bg-card)', border: '1px solid var(--border-light)',
+          padding: '6px 12px', borderRadius: 9999, textDecoration: 'none',
+          boxShadow: 'var(--shadow-sm)', transition: 'var(--transition)',
+        }}
+          onMouseEnter={e => { e.currentTarget.style.color = 'var(--primary)'; e.currentTarget.style.borderColor = 'var(--primary)' }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-light)' }}
+        >
+          <ArrowLeft size={13} /> Back to home
+        </Link>
+      </motion.div>
 
       {/* Left panel */}
       <div style={{
@@ -149,12 +152,13 @@ export default function Register() {
 
       {/* Right form */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
-        <div style={{ width: '100%', maxWidth: 400 }}>
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} style={{ width: '100%', maxWidth: 400 }}>
 
           <div style={{ textAlign: 'center', marginBottom: 24, marginTop: 48 }}>
-            <div style={{ width: 56, height: 56, background: 'var(--primary)', borderRadius: 16, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(30,60,10,0.25)', marginBottom: 12 }}>
+            <motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.4, delay: 0.1 }}
+              style={{ width: 56, height: 56, background: 'var(--primary)', borderRadius: 16, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(30,60,10,0.25)', marginBottom: 12 }}>
               <UserPlus size={24} color="#fff" />
-            </div>
+            </motion.div>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-heading)', margin: 0 }}>Create account</h1>
             <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: 6 }}>Register to access the enforcement platform</p>
           </div>
@@ -247,7 +251,7 @@ export default function Register() {
               <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'none' }}>Sign in</Link>
             </p>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   )

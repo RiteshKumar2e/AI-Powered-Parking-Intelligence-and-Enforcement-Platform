@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Shield, Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { useAuth } from '../hooks/useAuth'
 import toast from 'react-hot-toast'
 
@@ -24,19 +25,20 @@ export default function Login() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg-page)', position: 'relative' }}>
       {/* Back to home — top-left */}
-      <Link to="/" style={{
-        position: 'fixed', top: 16, left: 16, zIndex: 100,
-        display: 'inline-flex', alignItems: 'center', gap: 6,
-        fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)',
-        background: 'var(--bg-card)', border: '1px solid var(--border-light)',
-        padding: '6px 12px', borderRadius: 9999, textDecoration: 'none',
-        boxShadow: 'var(--shadow-sm)', transition: 'var(--transition)',
-      }}
-        onMouseEnter={e => { e.currentTarget.style.color = 'var(--primary)'; e.currentTarget.style.borderColor = 'var(--primary)' }}
-        onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-light)' }}
-      >
-        <ArrowLeft size={13} /> Back to home
-      </Link>
+      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }} style={{ position: 'fixed', top: 16, left: 16, zIndex: 100 }}>
+        <Link to="/" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)',
+          background: 'var(--bg-card)', border: '1px solid var(--border-light)',
+          padding: '6px 12px', borderRadius: 9999, textDecoration: 'none',
+          boxShadow: 'var(--shadow-sm)', transition: 'var(--transition)',
+        }}
+          onMouseEnter={e => { e.currentTarget.style.color = 'var(--primary)'; e.currentTarget.style.borderColor = 'var(--primary)' }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-light)' }}
+        >
+          <ArrowLeft size={13} /> Back to home
+        </Link>
+      </motion.div>
       {/* Left decorative panel */}
       <div style={{
         width: 400, display: 'none', flexShrink: 0,
@@ -70,11 +72,12 @@ export default function Login() {
 
       {/* Right login panel */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
-        <div style={{ width: '100%', maxWidth: 360 }}>
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} style={{ width: '100%', maxWidth: 360 }}>
           <div style={{ textAlign: 'center', marginBottom: 28 }}>
-            <div style={{ width: 56, height: 56, background: 'var(--primary)', borderRadius: 16, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(30,60,10,0.25)', marginBottom: 14 }}>
+            <motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.4, delay: 0.1 }}
+              style={{ width: 56, height: 56, background: 'var(--primary)', borderRadius: 16, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(30,60,10,0.25)', marginBottom: 14 }}>
               <Shield size={26} color="#fff" />
-            </div>
+            </motion.div>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-heading)', margin: 0 }}>Welcome back</h1>
             <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: 6 }}>Sign in to your enforcement account</p>
           </div>
@@ -120,7 +123,7 @@ export default function Login() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   )
