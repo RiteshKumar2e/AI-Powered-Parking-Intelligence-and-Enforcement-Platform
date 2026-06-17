@@ -132,7 +132,6 @@ const navLinks = [
   { href: '#goals',      label: 'Our Goals' },
   { href: '#howitworks', label: 'How It Works' },
   { href: '#tech',       label: 'Technology' },
-  { href: '#contact',    label: 'Contact' },
 ]
 
 const techStack = [
@@ -346,40 +345,100 @@ export default function Landing() {
         </div>
       </Section>
 
-      {/* ── CONTACT ──────────────────────────────────────────────────── */}
-      <Section id="contact" style={{ maxWidth: 1200, margin: '0 auto', padding: '5rem 1.5rem' }}>
-        <motion.div variants={fadeUp} style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-heading)', marginBottom: 12 }}>Contact</h2>
-          <p style={{ color: 'var(--text-muted)', lineHeight: 1.7 }}>Have questions or want to collaborate? Reach out.</p>
-        </motion.div>
-        <motion.div variants={stagger(0.12)} style={{ display: 'flex', flexWrap: 'wrap', gap: 18, justifyContent: 'center' }}>
-          <ContactCard href="mailto:riteshkumar90359@gmail.com" icon={Mail}    label="Email"    value="riteshkumar90359@gmail.com"           hoverBorder="var(--primary)" hoverBg="var(--primary-faint)" iconBg="var(--primary-faint)" iconColor="var(--primary)" />
-          <ContactCard href="https://github.com/Riteshkumar2e"   icon={Github}  label="GitHub"   value="Riteshkumar2e"                        hoverBorder="#333"           hoverBg="#f6f8fa"              iconBg="#f6f8fa"              iconColor="#24292f" />
-          <ContactCard href="https://www.linkedin.com/in/riteshkumar-tech/" icon={Linkedin} label="LinkedIn" value="riteshkumar-tech" hoverBorder="#0A66C2" hoverBg="#EEF3F8" iconBg="#EEF3F8" iconColor="#0A66C2" />
-        </motion.div>
-      </Section>
 
       {/* ── FOOTER ───────────────────────────────────────────────────── */}
       <motion.footer
-        initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-        style={{ background: 'var(--bg-card)', borderTop: '1px solid var(--border-light)', padding: '1.75rem 1.5rem' }}
+        initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }} viewport={{ once: true }}
+        style={{ background: '#0F172A', borderTop: '1px solid rgba(255,255,255,0.06)' }}
       >
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 14, fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-            <div style={{ width: 26, height: 26, background: 'var(--primary)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Shield size={13} color="#fff" />
+        {/* Main footer grid */}
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '3.5rem 2rem 2.5rem', display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1.4fr', gap: '2.5rem', flexWrap: 'wrap' }}>
+
+          {/* Brand column */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 34, height: 34, background: 'linear-gradient(135deg, #16A34A, #15803D)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 10px rgba(22,163,74,0.35)' }}>
+                <Shield size={16} color="#fff" strokeWidth={2.5} />
+              </div>
+              <span style={{ fontWeight: 800, fontSize: '1.05rem', color: '#fff', letterSpacing: '-0.02em' }}>ParkIQ</span>
             </div>
-            <span style={{ fontWeight: 800, color: 'var(--primary)' }}>ParkIQ</span>
-            <span>— AI-Powered Smart Parking Intelligence</span>
+            <p style={{ fontSize: '0.82rem', color: '#9CA3AF', lineHeight: 1.7, margin: 0, maxWidth: 260 }}>
+              AI-powered smart parking intelligence and enforcement platform. Real-time detection, analytics, and reporting for modern cities.
+            </p>
+            <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+              {[
+                { href: 'mailto:riteshkumar90359@gmail.com', icon: Mail,    label: 'Email'    },
+                { href: 'https://github.com/Riteshkumar2e',  icon: Github,  label: 'GitHub'   },
+                { href: 'https://www.linkedin.com/in/riteshkumar-tech/', icon: Linkedin, label: 'LinkedIn' },
+              ].map(({ href, icon: Icon, label }) => (
+                <motion.a key={label} href={href} target="_blank" rel="noopener noreferrer"
+                  aria-label={label}
+                  whileHover={{ y: -2, background: 'rgba(255,255,255,0.12)' } as never}
+                  style={{ width: 34, height: 34, borderRadius: 8, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF', textDecoration: 'none', transition: 'all 0.15s' }}
+                >
+                  <Icon size={15} />
+                </motion.a>
+              ))}
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap' }}>
-            {[['Sign In','/login'],['Register','/register'],['Dashboard','/app/dashboard'],['API Docs','/api/docs']].map(([l,h]) => (
-              <motion.a key={l} href={h} whileHover={{ color: 'var(--primary)' } as never}
-                style={{ color: 'var(--text-muted)', textDecoration: 'none', fontWeight: 500 }}
-              >{l}</motion.a>
-            ))}
+
+          {/* Platform links */}
+          <div>
+            <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#6B7280', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>Platform</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[['Dashboard', '#'],['Live Monitor', '#'],['Violations', '#'],['Heatmap', '#'],['Predictions', '#']].map(([label, href]) => (
+                <motion.a key={label} href={href} whileHover={{ x: 3, color: '#22C55E' } as never}
+                  style={{ fontSize: '0.83rem', color: '#9CA3AF', textDecoration: 'none', fontWeight: 500, transition: 'all 0.12s', display: 'flex', alignItems: 'center', gap: 6 }}
+                >{label}</motion.a>
+              ))}
+            </div>
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-faint)' }}>© 2025 Ritesh Kumar · ParkIQ</div>
+
+          {/* Developers links */}
+          <div>
+            <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#6B7280', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>Developers</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[['API Docs', '/api/docs'],['Register', '/register'],['Sign In', '/login']].map(([label, href]) => (
+                <motion.a key={label} href={href} whileHover={{ x: 3, color: '#22C55E' } as never}
+                  style={{ fontSize: '0.83rem', color: '#9CA3AF', textDecoration: 'none', fontWeight: 500, transition: 'all 0.12s' }}
+                >{label}</motion.a>
+              ))}
+            </div>
+          </div>
+
+          {/* Contact column */}
+          <div>
+            <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#6B7280', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>Contact</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {[
+                { icon: Mail,    label: 'Email',    value: 'riteshkumar90359@gmail.com', href: 'mailto:riteshkumar90359@gmail.com' },
+                { icon: Github,  label: 'GitHub',   value: 'Riteshkumar2e',              href: 'https://github.com/Riteshkumar2e' },
+                { icon: Linkedin,label: 'LinkedIn', value: 'riteshkumar-tech',           href: 'https://www.linkedin.com/in/riteshkumar-tech/' },
+              ].map(({ icon: Icon, label, value, href }) => (
+                <motion.a key={label} href={href} target="_blank" rel="noopener noreferrer"
+                  whileHover={{ x: 2 } as never}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none', transition: 'all 0.12s' }}
+                >
+                  <div style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7280', flexShrink: 0 }}>
+                    <Icon size={13} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.62rem', color: '#4B5563', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{label}</div>
+                    <div style={{ fontSize: '0.78rem', color: '#D1D5DB', fontWeight: 500, marginTop: 1 }}>{value}</div>
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', maxWidth: 1200, margin: '0 auto', padding: '1.25rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '0.75rem', color: '#4B5563' }}>© 2025 Ritesh Kumar. All rights reserved.</span>
+          <span style={{ fontSize: '0.72rem', color: '#374151', display: 'flex', alignItems: 'center', gap: 6 }}>
+            Built with <span style={{ color: '#22C55E', fontWeight: 700 }}>YOLOv8</span> · <span style={{ color: '#22C55E', fontWeight: 700 }}>FastAPI</span> · <span style={{ color: '#22C55E', fontWeight: 700 }}>React</span>
+          </span>
         </div>
       </motion.footer>
     </div>
