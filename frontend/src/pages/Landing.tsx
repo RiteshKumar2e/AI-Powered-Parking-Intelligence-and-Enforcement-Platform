@@ -7,7 +7,7 @@ import {
   Shield, Camera, Map, TrendingUp, FileText, Activity,
   AlertTriangle, CheckCircle, ArrowRight, Cpu, Zap, Eye,
   Users, Target, Lightbulb, Mail, Github, Linkedin, X,
-  LayoutDashboard, Video, BarChart2, Layers,
+  LayoutDashboard, Video, BarChart2, Layers, ChevronUp,
 } from 'lucide-react'
 
 // ── animation variants ────────────────────────────────────────────────────
@@ -288,9 +288,12 @@ function PlatformModal({ name, onClose }: { name: string; onClose: () => void })
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Landing() {
   const [activePopup, setActivePopup] = useState<string | null>(null)
+  const [showScrollTop, setShowScrollTop] = useState(false)
   const { scrollY } = useScroll()
   const blob1Y = useTransform(scrollY, [0, 600], [0, -80])
   const blob2Y = useTransform(scrollY, [0, 600], [0, -40])
+
+  scrollY.on('change', v => setShowScrollTop(v > 300))
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)', overflowX: 'hidden' }}>
@@ -587,6 +590,30 @@ export default function Landing() {
       {/* ── Platform feature popup ────────────────────────────────────── */}
       <AnimatePresence>
         {activePopup && <PlatformModal name={activePopup} onClose={() => setActivePopup(null)} />}
+      </AnimatePresence>
+
+      {/* ── Scroll to top ─────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.7, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.7, y: 10 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            whileHover={{ scale: 1.1, boxShadow: '0 8px 24px rgba(22,163,74,0.35)' }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            style={{
+              position: 'fixed', bottom: 28, right: 28, zIndex: 999,
+              width: 44, height: 44, borderRadius: '50%',
+              background: '#16A34A', border: 'none', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: '#fff', boxShadow: '0 4px 16px rgba(22,163,74,0.25)',
+            }}
+          >
+            <ChevronUp size={20} strokeWidth={2.5} />
+          </motion.button>
+        )}
       </AnimatePresence>
     </div>
   )
