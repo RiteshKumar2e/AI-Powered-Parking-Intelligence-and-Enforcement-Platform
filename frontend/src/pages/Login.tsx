@@ -7,8 +7,8 @@ import toast from 'react-hot-toast'
 export default function Login() {
   const { login, isAuthenticated } = useAuth()
   const navigate = useNavigate()
-  const [username, setUsername] = useState('admin')
-  const [password, setPassword] = useState('admin123')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [showPwd, setShowPwd] = useState(false)
   const [loading, setLoading] = useState(false)
 
