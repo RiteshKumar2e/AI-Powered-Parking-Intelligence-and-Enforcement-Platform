@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  backend:
+    build: ./backend
+    container_name: parkiq-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./parking_enforcement.db
+      - SIMULATE_DETECTIONS=true
+      - DEBUG=true
+      - ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000,http://localhost:80
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - LOCAL_STORAGE_PATH=/app/storage
+      - SECRET_KEY=${SECRET_KEY:-supersecretkey123changethisinproduction}
+    volumes:
+      - ./backend:/app
+      - parkiq_storage:/app/storage
+      - parkiq_db:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: parkiq-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  parkiq_storage:
+  parkiq_db:
