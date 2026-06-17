@@ -1,10 +1,11 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getHistory, getCameras, deleteHistoryLog } from '../api'
 import { format } from 'date-fns'
 import { History as HistoryIcon, Camera, Car, AlertTriangle, Activity, Trash2, ChevronLeft, ChevronRight, ImageIcon } from 'lucide-react'
 import toast from 'react-hot-toast'
 import type { Camera as CameraType } from '../types'
+import PageWrapper from '../components/PageWrapper'
 
 type FrameLogItem = {
   id: number
@@ -47,7 +48,7 @@ export default function History() {
   const page  = Math.floor(offset / LIMIT) + 1
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} className="animate-fadein">
+    <PageWrapper>
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
@@ -222,6 +223,7 @@ export default function History() {
           <p style={{ color: '#94A3B8', fontSize: '0.75rem', marginTop: 10 }}>Click anywhere to close</p>
         </div>
       )}
-    </div>
+    </PageWrapper>
   )
 }
+

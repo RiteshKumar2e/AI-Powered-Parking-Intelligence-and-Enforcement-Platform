@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet'
 import { getCameras, createCamera, updateCamera } from '../api'
@@ -7,6 +7,7 @@ import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 import type { Camera } from '../types'
 import 'leaflet/dist/leaflet.css'
+import PageWrapper from '../components/PageWrapper'
 
 const CENTER: [number, number] = [19.0760, 72.8777]
 const STATUS_COLORS: Record<string, string> = {
@@ -43,7 +44,7 @@ export default function Cameras() {
   const total = cameras?.length ?? 0
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} className="animate-fadein">
+    <PageWrapper>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <h1 className="section-title">Camera Management</h1>
@@ -131,6 +132,7 @@ export default function Cameras() {
           </table>
         </div>
       </div>
-    </div>
+    </PageWrapper>
   )
 }
+

@@ -1,10 +1,11 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { FileText, Plus, Loader, ChevronRight } from 'lucide-react'
 import { getReports, createReport } from '../api'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 import type { Report } from '../types'
+import PageWrapper from '../components/PageWrapper'
 
 const REPORT_TYPES = [
   { value: 'violation_summary', label: 'Violation Summary' },
@@ -45,7 +46,7 @@ export default function Reports() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} className="animate-fadein">
+    <PageWrapper>
       <div>
         <h1 className="section-title">Enforcement Reports</h1>
         <p className="section-sub">AI-generated reports using Claude LLM analysis</p>
@@ -126,6 +127,7 @@ export default function Reports() {
           )}
         </div>
       </div>
-    </div>
+    </PageWrapper>
   )
 }
+

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+﻿import { useQuery } from '@tanstack/react-query'
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet'
 import { getForecast, getRecommendations } from '../api'
 import { RiskBadge } from '../components/ViolationBadge'
@@ -6,6 +6,7 @@ import { TrendingUp, Users, AlertTriangle } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartTooltip, ResponsiveContainer, Cell } from 'recharts'
 import type { Prediction } from '../types'
 import 'leaflet/dist/leaflet.css'
+import PageWrapper from '../components/PageWrapper'
 
 const CENTER: [number, number] = [19.0760, 72.8777]
 const RISK_COLORS: Record<string, string> = { low: '#16A34A', medium: '#D97706', high: '#EA580C', critical: '#DC2626' }
@@ -19,7 +20,7 @@ export default function Predictions() {
   const recommendations = recData?.recommendations ?? []
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }} className="animate-fadein">
+    <PageWrapper>
       <div>
         <h1 className="section-title">Predictive Analytics</h1>
         <p className="section-sub">AI-powered hotspot forecasting and enforcement optimization</p>
@@ -128,6 +129,7 @@ export default function Predictions() {
           </tbody>
         </table>
       </div>
-    </div>
+    </PageWrapper>
   )
 }
+

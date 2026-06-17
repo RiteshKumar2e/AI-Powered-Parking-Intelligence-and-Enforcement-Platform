@@ -1,8 +1,9 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet'
 import { getHeatmap, getHotspots } from '../api'
 import 'leaflet/dist/leaflet.css'
+import PageWrapper from '../components/PageWrapper'
 
 const SEV_COLORS = ['#2A7B3A','#65A30D','#D97706','#EA580C','#C42020']
 const CENTER: [number, number] = [19.076, 72.8777]
@@ -16,7 +17,8 @@ export default function Heatmap() {
   const hotspots = hotspotData?.hotspots ?? []
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }} className="animate-fadein">
+    <PageWrapper>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
         <div><h1 className="section-title">Violation Heatmap</h1><p className="section-sub">Spatial distribution of parking violations and congestion hotspots</p></div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -74,6 +76,8 @@ export default function Heatmap() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </PageWrapper>
   )
 }
+

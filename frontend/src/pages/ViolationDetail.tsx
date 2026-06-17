@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, CheckCircle, XCircle, Ticket, MapPin, Clock, Car } from 'lucide-react'
@@ -6,6 +6,7 @@ import { getViolation, createEnforcementAction } from '../api'
 import { StatusBadge } from '../components/ViolationBadge'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
+import PageWrapper from '../components/PageWrapper'
 
 export default function ViolationDetail() {
   const { id } = useParams<{ id: string }>()
@@ -36,7 +37,8 @@ export default function ViolationDetail() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 900 }} className="animate-fadein">
+    <PageWrapper>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 900 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
         <Link to="/app/violations" style={{ display: 'flex', color: 'var(--text-muted)', transition: 'var(--transition)' }}
           onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
@@ -137,6 +139,8 @@ export default function ViolationDetail() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </PageWrapper>
   )
 }
+

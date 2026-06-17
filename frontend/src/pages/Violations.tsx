@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { Filter, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -7,6 +7,7 @@ import { StatusBadge } from '../components/ViolationBadge'
 import { format } from 'date-fns'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import type { Violation } from '../types'
+import PageWrapper from '../components/PageWrapper'
 
 const VTYPES = ['illegal_parking','no_parking_zone','double_parking','blocking_intersection','pavement_parking','bus_stop_parking','wrong_side_driving','red_light_violation','stop_line_violation','helmet_non_compliance','seatbelt_non_compliance','triple_riding']
 const STATUSES = ['pending_review','confirmed','dismissed','ticket_issued']
@@ -28,7 +29,8 @@ export default function Violations() {
   const pieData = stats ? Object.entries(stats.by_type || {}).map(([name, value]) => ({ name: name.replace(/_/g, ' '), value: value as number })) : []
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }} className="animate-fadein">
+    <PageWrapper>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
       <div>
         <h1 className="section-title">Violations</h1>
         <p className="section-sub">All detected parking and traffic violations</p>
@@ -125,6 +127,8 @@ export default function Violations() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </PageWrapper>
   )
 }
+

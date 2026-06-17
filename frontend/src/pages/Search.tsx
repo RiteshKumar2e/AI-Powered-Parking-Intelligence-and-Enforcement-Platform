@@ -1,10 +1,11 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { Search as SearchIcon, Car, Shield } from 'lucide-react'
 import { search } from '../api'
 import { StatusBadge } from '../components/ViolationBadge'
 import { format } from 'date-fns'
+import PageWrapper from '../components/PageWrapper'
 
 export default function Search() {
   const [query, setQuery] = useState('')
@@ -22,7 +23,8 @@ export default function Search() {
   })
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 768 }} className="animate-fadein">
+    <PageWrapper>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 768 }}>
       <div>
         <h1 className="section-title">Search</h1>
         <p className="section-sub">Search violations by license plate, vehicle type, or location</p>
@@ -122,6 +124,8 @@ export default function Search() {
           )}
         </div>
       )}
-    </div>
+      </div>
+    </PageWrapper>
   )
 }
+
