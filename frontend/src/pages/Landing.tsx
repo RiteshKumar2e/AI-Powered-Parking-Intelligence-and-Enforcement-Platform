@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom'
-import { motion, useScroll, useTransform, type Variants } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence, useScroll, useTransform, type Variants } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import CountUp from 'react-countup'
 import {
   Shield, Camera, Map, TrendingUp, FileText, Activity,
   AlertTriangle, CheckCircle, ArrowRight, Cpu, Zap, Eye,
-  Users, Target, Lightbulb, Mail, Github, Linkedin,
+  Users, Target, Lightbulb, Mail, Github, Linkedin, X,
+  LayoutDashboard, Video, BarChart2, Layers,
 } from 'lucide-react'
 
 // ── animation variants ────────────────────────────────────────────────────
@@ -132,6 +134,7 @@ const navLinks = [
   { href: '#goals',      label: 'Our Goals' },
   { href: '#howitworks', label: 'How It Works' },
   { href: '#tech',       label: 'Technology' },
+  { href: '#contact',    label: 'Contact' },
 ]
 
 const techStack = [
@@ -145,8 +148,146 @@ const techStack = [
   ['SQLAlchemy', 'ORM + Migrations',  'var(--bg-subtle)',    'var(--border-light)'],
 ]
 
+// ── platform feature details for footer popup ────────────────────────────────
+const PLATFORM_INFO: Record<string, {
+  icon: React.ElementType; color: string; bg: string;
+  tagline: string; desc: string;
+  bullets: string[];
+  cta: string; ctaHref: string;
+}> = {
+  'Dashboard': {
+    icon: LayoutDashboard, color: '#22C55E', bg: 'rgba(34,197,94,0.12)',
+    tagline: 'Real-time enforcement overview',
+    desc: 'A command-center view of your entire parking enforcement operation — updated every 30 seconds.',
+    bullets: [
+      'Live violation count with % change vs yesterday',
+      'Active camera health & offline alerts',
+      'Congestion score per zone (0–100)',
+      'Recent violations table with quick-review links',
+      'Trend charts: 7-day area & top-zone bar graph',
+    ],
+    cta: 'Open Dashboard', ctaHref: '/app/dashboard',
+  },
+  'Live Monitor': {
+    icon: Video, color: '#3B82F6', bg: 'rgba(59,130,246,0.12)',
+    tagline: 'Upload frames or stream live webcam',
+    desc: 'The core detection interface — submit a parking scene and get annotated results in under 200 ms.',
+    bullets: [
+      'Drag-and-drop image or video frame upload',
+      'Live webcam mode with 1–10 s capture interval',
+      'YOLOv8 bounding boxes with confidence scores',
+      'OCR license plate extraction with validation',
+      'One-click violation save from detection result',
+    ],
+    cta: 'Try Live Monitor', ctaHref: '/app/monitor',
+  },
+  'Violations': {
+    icon: AlertTriangle, color: '#F59E0B', bg: 'rgba(245,158,11,0.12)',
+    tagline: 'Browse and manage incidents',
+    desc: 'Full violation lifecycle management — from detection to ticket issuance.',
+    bullets: [
+      'Filter by zone, type, plate, date range, status',
+      'Evidence panel: annotated frame + raw image',
+      'Status workflow: Detected → Reviewed → Resolved',
+      'Congestion score and vehicle type per incident',
+      'Export CSV for offline reporting',
+    ],
+    cta: 'View Violations', ctaHref: '/app/violations',
+  },
+  'Heatmap': {
+    icon: Map, color: '#8B5CF6', bg: 'rgba(139,92,246,0.12)',
+    tagline: 'Spatial violation density mapping',
+    desc: 'Visualise where violations cluster geographically to guide patrol deployment.',
+    bullets: [
+      'Leaflet.js interactive map with zone overlays',
+      'Heatmap layer — intensity = violation count',
+      'Time-range filter: today / 7d / 30d / custom',
+      'Per-zone tooltip: count, top violation type',
+      'Export map snapshot as PNG',
+    ],
+    cta: 'View Heatmap', ctaHref: '/app/heatmap',
+  },
+  'Predictions': {
+    icon: TrendingUp, color: '#EC4899', bg: 'rgba(236,72,153,0.12)',
+    tagline: 'ML-based hotspot forecasting',
+    desc: 'Predict which zones will see the most violations before they happen.',
+    bullets: [
+      'Zone-level risk scores for next 24 hours',
+      'Historical pattern analysis (day-of-week, hour)',
+      'Confidence bands on forecast charts',
+      'Recommended patrol priority list',
+      'Model retrained nightly on new violation data',
+    ],
+    cta: 'View Predictions', ctaHref: '/app/predictions',
+  },
+}
+
+// ── platform feature modal ────────────────────────────────────────────────────
+function PlatformModal({ name, onClose }: { name: string; onClose: () => void }) {
+  const info = PLATFORM_INFO[name]
+  if (!info) return null
+  const Icon = info.icon
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
+      onClick={onClose}
+      style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)' }}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.92, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.94, y: 10 }}
+        transition={{ duration: 0.22, ease: 'easeOut' }}
+        onClick={e => e.stopPropagation()}
+        style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 20, padding: '2rem', maxWidth: 480, width: '100%', boxShadow: '0 20px 60px rgba(15,23,42,0.15)', position: 'relative' }}
+      >
+        {/* Close */}
+        <motion.button onClick={onClose} whileHover={{ background: '#F1F5F9' }}
+          style={{ position: 'absolute', top: 14, right: 14, background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748B' }}>
+          <X size={15} />
+        </motion.button>
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
+          <div style={{ width: 48, height: 48, borderRadius: 14, background: info.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: info.color }}>
+            <Icon size={22} />
+          </div>
+          <div>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', margin: 0, letterSpacing: '-0.02em' }}>{name}</h3>
+            <p style={{ fontSize: '0.75rem', color: '#64748B', margin: '3px 0 0', fontWeight: 500 }}>{info.tagline}</p>
+          </div>
+        </div>
+
+        {/* Desc */}
+        <p style={{ fontSize: '0.875rem', color: '#475569', lineHeight: 1.7, marginBottom: 18 }}>{info.desc}</p>
+
+        {/* Bullets */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
+          {info.bullets.map(b => (
+            <div key={b} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+              <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                <CheckCircle size={11} style={{ color: '#16A34A' }} />
+              </div>
+              <span style={{ fontSize: '0.82rem', color: '#334155', lineHeight: 1.5 }}>{b}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <Link to={info.ctaHref} onClick={onClose}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', padding: '0.7rem', background: '#16A34A', borderRadius: 10, color: '#fff', fontWeight: 700, fontSize: '0.875rem', textDecoration: 'none', letterSpacing: '-0.01em' }}
+        >
+          {info.cta} <ArrowRight size={15} />
+        </Link>
+      </motion.div>
+    </motion.div>
+  )
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 export default function Landing() {
+  const [activePopup, setActivePopup] = useState<string | null>(null)
   const { scrollY } = useScroll()
   const blob1Y = useTransform(scrollY, [0, 600], [0, -80])
   const blob2Y = useTransform(scrollY, [0, 600], [0, -40])
@@ -387,10 +528,11 @@ export default function Landing() {
           <div>
             <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#6B7280', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>Platform</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {[['Dashboard', '#'],['Live Monitor', '#'],['Violations', '#'],['Heatmap', '#'],['Predictions', '#']].map(([label, href]) => (
-                <motion.a key={label} href={href} whileHover={{ x: 3, color: '#22C55E' } as never}
-                  style={{ fontSize: '0.83rem', color: '#9CA3AF', textDecoration: 'none', fontWeight: 500, transition: 'all 0.12s', display: 'flex', alignItems: 'center', gap: 6 }}
-                >{label}</motion.a>
+              {['Dashboard','Live Monitor','Violations','Heatmap','Predictions'].map(label => (
+                <motion.button key={label} onClick={() => setActivePopup(label)}
+                  whileHover={{ x: 3, color: '#22C55E' } as never}
+                  style={{ fontSize: '0.83rem', color: '#9CA3AF', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left', display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.12s' }}
+                >{label}</motion.button>
               ))}
             </div>
           </div>
@@ -408,7 +550,7 @@ export default function Landing() {
           </div>
 
           {/* Contact column */}
-          <div>
+          <div id="contact">
             <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#6B7280', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>Contact</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
@@ -441,6 +583,11 @@ export default function Landing() {
           </span>
         </div>
       </motion.footer>
+
+      {/* ── Platform feature popup ────────────────────────────────────── */}
+      <AnimatePresence>
+        {activePopup && <PlatformModal name={activePopup} onClose={() => setActivePopup(null)} />}
+      </AnimatePresence>
     </div>
   )
 }
