@@ -1,0 +1,39 @@
+{
+  "feature_cols": [
+    "lat_grid",
+    "lng_grid",
+    "hour",
+    "day_of_week",
+    "month",
+    "vehicle_enc"
+  ],
+  "risk_labels": [
+    "low",
+    "medium",
+    "high",
+    "critical"
+  ],
+  "vehicle_classes": [
+    "auto_rickshaw",
+    "bus",
+    "car",
+    "motorcycle",
+    "other",
+    "truck"
+  ],
+  "lat_center": 12.98080195210157,
+  "lng_center": 77.60051246809687,
+  "lat_std": 0.04973190535400996,
+  "lng_std": 0.05051862424703315,
+  "lat_min": 12.8026667,
+  "lat_max": 13.293684372967755,
+  "lng_min": 77.442553,
+  "lng_max": 77.771735,
+  "training_rows": 298445,
+  "training_cells": 57429,
+  "peak_hours": [
+    5,
+    4,
+    6
+  ]
+}

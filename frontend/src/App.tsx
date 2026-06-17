@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
+import type { UserRole } from './types'
 import Layout from './components/Layout'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
@@ -19,6 +20,14 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />
 }
 
+function RoleGuard({ roles, children }: { roles: UserRole[]; children: React.ReactNode }) {
+  const { user } = useAuth()
+  if (!user || !roles.includes(user.role as UserRole)) {
+    return <Navigate to="/app/dashboard" replace />
+  }
+  return <>{children}</>
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -34,27 +43,56 @@ export default function App() {
           }
         >
           <Route index element={<Navigate to="/app/dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="monitor" element={<LiveMonitor />} />
+
+          {/* All roles */}
+          <Route path="dashboard"  element={<Dashboard />} />
           <Route path="violations" element={<Violations />} />
           <Route path="violations/:id" element={<ViolationDetail />} />
-          <Route path="heatmap" element={<Heatmap />} />
-          <Route path="predictions" element={<Predictions />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="cameras" element={<Cameras />} />
-          <Route path="zones" element={<Zones />} />
-          <Route path="search" element={<Search />} />
+          <Route path="heatmap"    element={<Heatmap />} />
+          <Route path="search"     element={<Search />} />
+
+          {/* Admin + Officer */}
+          <Route path="monitor" element={
+            <RoleGuard roles={['admin', 'officer']}>
+              <LiveMonitor />
+            </RoleGuard>
+          } />
+          <Route path="cameras" element={
+            <RoleGuard roles={['admin', 'officer']}>
+              <Cameras />
+            </RoleGuard>
+          } />
+
+          {/* Admin + Analyst */}
+          <Route path="predictions" element={
+            <RoleGuard roles={['admin', 'analyst']}>
+              <Predictions />
+            </RoleGuard>
+          } />
+          <Route path="reports" element={
+            <RoleGuard roles={['admin', 'analyst']}>
+              <Reports />
+            </RoleGuard>
+          } />
+
+          {/* Admin + Analyst + Viewer */}
+          <Route path="zones" element={
+            <RoleGuard roles={['admin', 'analyst', 'viewer']}>
+              <Zones />
+            </RoleGuard>
+          } />
         </Route>
-        {/* Legacy /dashboard redirect */}
-        <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
-        <Route path="/monitor" element={<Navigate to="/app/monitor" replace />} />
-        <Route path="/violations" element={<Navigate to="/app/violations" replace />} />
-        <Route path="/heatmap" element={<Navigate to="/app/heatmap" replace />} />
+
+        {/* Legacy redirects */}
+        <Route path="/dashboard"   element={<Navigate to="/app/dashboard" replace />} />
+        <Route path="/monitor"     element={<Navigate to="/app/monitor" replace />} />
+        <Route path="/violations"  element={<Navigate to="/app/violations" replace />} />
+        <Route path="/heatmap"     element={<Navigate to="/app/heatmap" replace />} />
         <Route path="/predictions" element={<Navigate to="/app/predictions" replace />} />
-        <Route path="/reports" element={<Navigate to="/app/reports" replace />} />
-        <Route path="/cameras" element={<Navigate to="/app/cameras" replace />} />
-        <Route path="/zones" element={<Navigate to="/app/zones" replace />} />
-        <Route path="/search" element={<Navigate to="/app/search" replace />} />
+        <Route path="/reports"     element={<Navigate to="/app/reports" replace />} />
+        <Route path="/cameras"     element={<Navigate to="/app/cameras" replace />} />
+        <Route path="/zones"       element={<Navigate to="/app/zones" replace />} />
+        <Route path="/search"      element={<Navigate to="/app/search" replace />} />
       </Routes>
     </BrowserRouter>
   )
