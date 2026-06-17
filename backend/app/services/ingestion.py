@@ -34,31 +34,111 @@ def _get_tracker(camera_id: int) -> VehicleTracker:
     return _camera_trackers[camera_id]
 
 
+_MOVING_COLOR = "#1A91F0"   # blue  — moving / ok
+_PARKED_COLOR = "#FF6B00"   # orange — parked / violation
+_BOX_THICK    = 3
+_PAD          = 5
+
+
+def _get_font(size: int):
+    """Return a TrueType font at given size, falling back to PIL default."""
+    for name in ["arial.ttf", "Arial.ttf", "DejaVuSans-Bold.ttf", "FreeSansBold.ttf"]:
+        try:
+            return ImageFont.truetype(name, size)
+        except Exception:
+            pass
+    try:
+        return ImageFont.load_default()
+    except Exception:
+        return None
+
+
+def _text_size(draw: "ImageDraw.ImageDraw", text: str, font) -> tuple:
+    """Return (width, height) of text string."""
+    try:
+        bb = draw.textbbox((0, 0), text, font=font)
+        return bb[2] - bb[0], bb[3] - bb[1]
+    except Exception:
+        return len(text) * 7, 13
+
+
+def _draw_label(draw: "ImageDraw.ImageDraw", text: str, x1: int, y1: int,
+                color: str, font) -> int:
+    """White badge with colored border at (x1, y1-h). Returns badge top y."""
+    tw, th = _text_size(draw, text, font)
+    bx1, by1 = x1, max(0, y1 - th - _PAD * 2)
+    bx2, by2 = x1 + tw + _PAD * 2, y1
+    draw.rectangle([bx1, by1, bx2, by2], fill="white", outline=color, width=2)
+    draw.text((bx1 + _PAD, by1 + _PAD - 1), text, fill="#111111", font=font)
+    return by1
+
+
+def _draw_plate_badge(draw: "ImageDraw.ImageDraw", plate: str,
+                      x1: int, x2: int, above_y: int, font) -> None:
+    """White pill centered above the vehicle with • plate • text."""
+    text = f" • {plate} • "
+    tw, th = _text_size(draw, text, font)
+    cx  = (x1 + x2) // 2
+    bx1 = cx - tw // 2 - _PAD
+    by1 = max(0, above_y - th - _PAD * 2 - 4)
+    bx2 = cx + tw // 2 + _PAD
+    by2 = by1 + th + _PAD * 2
+    draw.rectangle([bx1, by1, bx2, by2], fill="white", outline="#222222", width=2)
+    draw.text((bx1 + _PAD, by1 + _PAD), text, fill="#111111", font=font)
+
+
 def _annotate_frame(
     image_bytes: bytes,
     detections: List[DetectionResult],
     violations: List[Violation],
+    plate_texts: Dict[str, str] = None,
 ) -> bytes:
-    """Draw bounding boxes and violation labels on the frame."""
+    """Draw styled bounding boxes with numbered labels and plate badges."""
     try:
-        img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        img  = Image.open(io.BytesIO(image_bytes)).convert("RGB")
         draw = ImageDraw.Draw(img)
+        iw, ih = img.size
 
-        violation_track_ids = {v.notes for v in violations if v.notes}
+        font_label = _get_font(14)
+        font_plate = _get_font(12)
+
+        # Per-type counter for numbering (CAR 1, CAR 2 …)
+        type_counts: Dict[str, int] = {}
 
         for det in detections:
-            bbox = det.bbox
-            x, y, w, h = bbox["x"], bbox["y"], bbox["w"], bbox["h"]
+            b  = det.bbox
+            x1 = max(0, b["x"])
+            y1 = max(0, b["y"])
+            x2 = min(iw, b["x"] + b["w"])
+            y2 = min(ih, b["y"] + b["h"])
+            if x2 <= x1 or y2 <= y1:
+                continue
 
-            color = "#FF4444" if det.is_parked else "#00CC44"
-            draw.rectangle([x, y, x + w, y + h], outline=color, width=3)
+            # Display name + numbering
+            vtype = {
+                "motorcycle": "BIKE", "bicycle": "CYCLE",
+                "auto_rickshaw": "AUTO",
+            }.get(det.vehicle_class, det.vehicle_class.upper())
 
-            label = f"{det.vehicle_class.upper()} {'PARKED' if det.is_parked else ''}"
-            draw.rectangle([x, y - 18, x + len(label) * 7, y], fill=color)
-            draw.text((x + 2, y - 16), label, fill="white")
+            type_counts[vtype] = type_counts.get(vtype, 0) + 1
+            label = f"{vtype} {type_counts[vtype]}"
+
+            color = _PARKED_COLOR if det.is_parked else _MOVING_COLOR
+
+            # Thick bounding box (draw stacked rects for thickness)
+            for d in range(_BOX_THICK):
+                draw.rectangle([x1 - d, y1 - d, x2 + d, y2 + d], outline=color)
+
+            # Label badge (top-left, hugging the box)
+            label_top_y = _draw_label(draw, label, x1, y1, color, font_label)
+
+            # Plate badge (floats above label, centred on vehicle)
+            plate = (plate_texts or {}).get(det.track_id)
+            if plate:
+                _draw_plate_badge(draw, plate, x1, x2, label_top_y, font_plate)
 
         output = io.BytesIO()
-        img.save(output, format="JPEG", quality=85)
+        img.save(output, format="JPEG", quality=90)
         return output.getvalue()
     except Exception as e:
         logger.warning(f"Frame annotation failed: {e}")
@@ -111,11 +191,28 @@ def process_frame(
                 det.dwell_seconds = pt.dwell_seconds
                 break
 
+    # Run OCR on every detected vehicle crop → build plate_texts dict
+    plate_results: Dict[str, object] = {}
+    plate_texts:   Dict[str, str]    = {}
+    for det in detections:
+        try:
+            crop = img.crop((
+                det.bbox["x"], det.bbox["y"],
+                det.bbox["x"] + det.bbox["w"],
+                det.bbox["y"] + det.bbox["h"],
+            ))
+            result = ocr.read_plate(np.array(crop))
+            if result:
+                plate_results[det.track_id] = result
+                plate_texts[det.track_id]   = result.normalized
+        except Exception:
+            pass
+
     # Save original frame
     orig_path, orig_url = storage.save_image(image_bytes, subfolder="evidence")
 
-    # Annotate frame
-    annotated_bytes = _annotate_frame(image_bytes, detections, [])
+    # Annotate frame with styled boxes + plate badges
+    annotated_bytes = _annotate_frame(image_bytes, detections, [], plate_texts=plate_texts)
     ann_path, ann_url = storage.save_image(annotated_bytes, subfolder="annotated")
 
     # Create violations for parked vehicles beyond threshold
@@ -124,16 +221,7 @@ def process_frame(
         if not det.is_parked:
             continue
 
-        # Run OCR on parked vehicle crop
-        try:
-            crop = img.crop((
-                det.bbox["x"], det.bbox["y"],
-                det.bbox["x"] + det.bbox["w"],
-                det.bbox["y"] + det.bbox["h"],
-            ))
-            plate_result = ocr.read_plate(np.array(crop))
-        except Exception:
-            plate_result = None
+        plate_result = plate_results.get(det.track_id)
 
         # Assign geo coordinates (camera location + small random offset for demo)
         lat = camera.latitude + random.uniform(-0.001, 0.001)

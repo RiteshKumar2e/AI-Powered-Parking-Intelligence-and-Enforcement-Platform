@@ -35,7 +35,7 @@ const ROLE_BADGE: Record<UserRole, { label: string; bg: string; color: string }>
 export default function Sidebar() {
   const { logout, user } = useAuth()
   const navigate = useNavigate()
-  const handleLogout = () => { logout(); navigate('/login') }
+  const handleLogout = () => { logout(); navigate('/') }
 
   const role = (user?.role ?? 'viewer') as UserRole
   const visibleNav = nav.filter(item => item.roles.includes(role))
