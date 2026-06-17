@@ -12,8 +12,14 @@ export function useWebSocket(
 
   const connect = useCallback(() => {
     if (!enabled) return
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const url = `${protocol}//${window.location.host}/ws/${channel}`
+    const envWs = import.meta.env.VITE_WS_URL as string | undefined
+    let url: string
+    if (envWs) {
+      url = `${envWs}/${channel}`
+    } else {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+      url = `${protocol}//${window.location.host}/ws/${channel}`
+    }
     const ws = new WebSocket(url)
     wsRef.current = ws
 

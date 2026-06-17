@@ -1,15 +1,24 @@
-# Dataset (large CSV — do not commit)
+# ── Dataset ───────────────────────────────────────────────────────────────────
 backend/jan to may police violation_anonymized791b166 (1).csv
 
-# ML model artifacts (regenerate with train_model.py)
+# ── ML model artifacts (regenerate with: python -m app.scripts.train_model) ──
 backend/app/ml_models/*.pkl
 backend/app/ml_models/meta.json
 
-# Python
+# ── Environment files (contain secrets — NEVER commit) ────────────────────────
+.env
+.env.local
+.env.*.local
+backend/.env
+backend/.env.local
+frontend/.env
+frontend/.env.local
+# .env.example files ARE committed (safe templates with no real secrets)
+
+# ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *.pyo
-.env
 *.egg-info/
 dist/
 build/
@@ -17,16 +26,18 @@ build/
 venv/
 env/
 
-# Database
+# ── Database ──────────────────────────────────────────────────────────────────
 *.db
 *.sqlite3
+*.db-wal
+*.db-shm
 
-# Frontend
+# ── Frontend ──────────────────────────────────────────────────────────────────
 frontend/node_modules/
 frontend/dist/
-frontend/.env
 
-# Misc
+# ── Misc ──────────────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
 *.log
+storage/
