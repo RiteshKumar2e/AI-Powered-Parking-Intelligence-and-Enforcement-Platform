@@ -83,7 +83,6 @@ export default function Landing() {
             <Link to="/register" className="btn-primary" style={{ padding: '0.7rem 2rem', fontSize: '1rem', boxShadow: '0 4px 14px rgba(30,60,10,0.25)', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
               Get Started <ArrowRight size={16} />
             </Link>
-            <Link to="/login" className="btn-secondary" style={{ padding: '0.7rem 2rem', fontSize: '1rem' }}>Sign In</Link>
           </div>
 
           {/* Stats */}
