@@ -10,7 +10,7 @@ from app.config import settings
 from app.database import create_tables
 from app.websocket.manager import manager
 
-from app.api import auth, cameras, zones, violations, plates, congestion, hotspots, predictions, reports, dashboard, search, users, history
+from app.api import auth, cameras, zones, violations, plates, congestion, hotspots, predictions, reports, dashboard, search, users, history, evaluation
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -68,6 +68,7 @@ app.include_router(dashboard.router, prefix="/api/v1")
 app.include_router(search.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(history.router, prefix="/api/v1")
+app.include_router(evaluation.router, prefix="/api/v1")
 
 
 @app.get("/api/v1/health")

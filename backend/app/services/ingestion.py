@@ -14,11 +14,13 @@ from sqlalchemy.orm import Session
 from PIL import Image, ImageDraw, ImageFont
 
 from app.models.camera import Camera
-from app.models.violation import Violation
+from app.models.violation import Violation, ViolationType
 from app.models.frame_log import FrameLog
-from app.ml.detector import get_detector, DetectionResult
+from app.ml.detector import get_detector, DetectionResult, PersonDetectionResult
 from app.ml.ocr import get_ocr
 from app.ml.tracker import VehicleTracker
+from app.ml.preprocessor import preprocess_frame
+from app.ml.violation_classifier import classify_violations
 from app.services.violation_engine import create_violation_from_track
 from app.services.congestion import record_congestion_snapshot
 from app.services.storage import get_storage
@@ -173,8 +175,12 @@ def process_frame(
         logger.error(f"Image decode error: {e}")
         return {"error": str(e)}
 
-    # Run detection
-    detections = detector.detect(frame_array, frame_number=frame_number)
+    # ── NEW: Preprocess frame (CLAHE, gamma, denoise, sharpen) ──────────
+    frame_array, preprocess_report = preprocess_frame(frame_array)
+    logger.debug("Preprocess report: %s", preprocess_report.get("stages_applied", []))
+
+    # Run detection (now returns vehicles AND persons)
+    detections, person_detections = detector.detect(frame_array, frame_number=frame_number)
 
     # Update tracker
     det_dicts = [
@@ -247,6 +253,69 @@ def process_frame(
         )
         if violation:
             new_violations.append(violation)
+
+    # ── NEW: Non-parking violation detection ────────────────────────────
+    vehicle_dicts = [
+        {
+            "track_id": d.track_id,
+            "vehicle_class": d.vehicle_class,
+            "bbox": d.bbox,
+            "confidence": d.confidence,
+        }
+        for d in detections
+    ]
+    person_dicts = [
+        {
+            "track_id": p.track_id,
+            "bbox": p.bbox,
+            "confidence": p.confidence,
+        }
+        for p in person_detections
+    ]
+
+    non_parking_violations = classify_violations(
+        vehicle_detections=vehicle_dicts,
+        person_detections=person_dicts,
+        frame=frame_array,
+        tracker_history=None,  # Would need position history for wrong-side / stop-line
+        zone_config=None,
+    )
+
+    # Create Violation records for non-parking violations
+    for nv in non_parking_violations:
+        try:
+            vtype = ViolationType(nv.violation_type)
+        except ValueError:
+            vtype = ViolationType.other
+
+        lat = camera.latitude + random.uniform(-0.001, 0.001)
+        lng = camera.longitude + random.uniform(-0.001, 0.001)
+
+        np_violation = Violation(
+            camera_id=camera.id,
+            zone_id=None,
+            violation_type=vtype,
+            vehicle_type=None,
+            plate_number=None,
+            plate_confidence=0.0,
+            detection_confidence=nv.confidence,
+            congestion_impact_score=0.0,
+            latitude=lat,
+            longitude=lng,
+            frame_timestamp=frame_timestamp,
+            dwell_seconds=0,
+            fine_amount=500.0,
+            bounding_box=nv.bbox,
+            evidence_image_url=orig_url,
+            annotated_image_url=ann_url,
+            raw_detection_data=nv.metadata,
+        )
+        db.add(np_violation)
+        db.flush()
+        new_violations.append(np_violation)
+
+    db.commit()
+    # ── END non-parking violations ──────────────────────────────────────
 
     # Record congestion metric
     congestion = record_congestion_snapshot(

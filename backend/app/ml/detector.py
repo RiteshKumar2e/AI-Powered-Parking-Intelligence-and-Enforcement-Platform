@@ -18,6 +18,11 @@ VEHICLE_CLASSES = {
     1: "bicycle",
 }
 
+# Persons / pedestrians — tracked separately for violation classification
+PERSON_CLASSES = {
+    0: "person",
+}
+
 # ── adaptive truck-correction constants ──────────────────────────────────────
 # A real truck/lorry is significantly larger than regular cars in the same scene.
 # If a YOLO "truck" box is smaller than TRUCK_SIZE_RATIO × median(all boxes)
@@ -88,6 +93,17 @@ class DetectionResult:
         self.detected_at   = datetime.utcnow()
 
 
+class PersonDetectionResult:
+    """A detected person / pedestrian (COCO class 0)."""
+    def __init__(self, track_id: str, confidence: float, bbox: Dict,
+                 frame_number: int = 0):
+        self.track_id     = track_id
+        self.confidence   = confidence
+        self.bbox         = bbox
+        self.frame_number = frame_number
+        self.detected_at  = datetime.utcnow()
+
+
 class VehicleDetector:
     def __init__(self, model_path: str = "yolov8s.pt", confidence: float = 0.40,
                  simulate: bool = True):
@@ -136,41 +152,43 @@ class VehicleDetector:
             logger.warning("YOLO load failed (%s) — simulation mode", e)
             self.simulate = True
 
-    def detect(self, frame: np.ndarray, frame_number: int = 0) -> List[DetectionResult]:
+    def detect(self, frame: np.ndarray, frame_number: int = 0):
+        """
+        Returns (vehicle_detections, person_detections).
+        """
         if self.simulate or self.model is None:
             return self._simulate_detections(frame_number)
         return self._run_yolo(frame, frame_number)
 
-    def _run_yolo(self, frame: np.ndarray, frame_number: int) -> List[DetectionResult]:
-        raw = []
+    def _run_yolo(self, frame: np.ndarray, frame_number: int):
+        raw_vehicles = []
+        raw_persons  = []
         try:
             predictions = self.model(frame, conf=self.confidence, verbose=False)
             for pred in predictions:
                 for box in pred.boxes:
                     cls_id = int(box.cls[0])
-                    if cls_id not in VEHICLE_CLASSES:
-                        continue
                     conf = float(box.conf[0])
                     x1, y1, x2, y2 = box.xyxy[0].tolist()
-                    raw.append({
-                        "cls":  VEHICLE_CLASSES[cls_id],
-                        "conf": conf,
-                        "bbox": {
-                            "x": int(x1), "y": int(y1),
-                            "w": int(x2 - x1), "h": int(y2 - y1),
-                        },
-                    })
+                    bbox = {
+                        "x": int(x1), "y": int(y1),
+                        "w": int(x2 - x1), "h": int(y2 - y1),
+                    }
+                    if cls_id in VEHICLE_CLASSES:
+                        raw_vehicles.append({"cls": VEHICLE_CLASSES[cls_id], "conf": conf, "bbox": bbox})
+                    elif cls_id in PERSON_CLASSES:
+                        raw_persons.append({"conf": conf, "bbox": bbox})
         except Exception as e:
             logger.error("YOLO inference error: %s", e)
-            return []
+            return [], []
 
         # ── adaptive truck correction ─────────────────────────────────────
-        corrected_classes = _correct_truck_labels(raw)
+        corrected_classes = _correct_truck_labels(raw_vehicles)
 
-        results = []
-        for item, final_cls in zip(raw, corrected_classes):
+        vehicle_results = []
+        for item, final_cls in zip(raw_vehicles, corrected_classes):
             self._track_counter += 1
-            results.append(DetectionResult(
+            vehicle_results.append(DetectionResult(
                 track_id      = f"det_{self._track_counter}",
                 vehicle_class = final_cls,
                 confidence    = item["conf"],
@@ -179,10 +197,24 @@ class VehicleDetector:
                 dwell_seconds = 0,
                 frame_number  = frame_number,
             ))
-        return results
 
-    def _simulate_detections(self, frame_number: int) -> List[DetectionResult]:
-        results = []
+        person_results = []
+        for item in raw_persons:
+            self._track_counter += 1
+            person_results.append(PersonDetectionResult(
+                track_id     = f"ped_{self._track_counter}",
+                confidence   = item["conf"],
+                bbox         = item["bbox"],
+                frame_number = frame_number,
+            ))
+
+        return vehicle_results, person_results
+
+    def _simulate_detections(self, frame_number: int):
+        vehicle_results = []
+        person_results  = []
+
+        # Simulate vehicles
         for _ in range(random.randint(2, 8)):
             self._track_counter += 1
             vehicle_class = random.choices(
@@ -190,19 +222,42 @@ class VehicleDetector:
                 weights=[65, 20, 8, 7],
             )[0]
             is_parked = random.random() < 0.35
-            results.append(DetectionResult(
+            vbbox = {
+                "x": random.randint(50, 800), "y": random.randint(50, 500),
+                "w": random.randint(80, 200),  "h": random.randint(50, 120),
+            }
+            vehicle_results.append(DetectionResult(
                 track_id      = f"trk_{self._track_counter:05d}",
                 vehicle_class = vehicle_class,
                 confidence    = round(random.uniform(0.65, 0.98), 3),
-                bbox          = {
-                    "x": random.randint(50, 800), "y": random.randint(50, 500),
-                    "w": random.randint(80, 200),  "h": random.randint(50, 120),
-                },
+                bbox          = vbbox,
                 is_parked     = is_parked,
                 dwell_seconds = random.randint(60, 600) if is_parked else 0,
                 frame_number  = frame_number,
             ))
-        return results
+
+        # Simulate persons (riders / pedestrians)
+        for _ in range(random.randint(0, 5)):
+            self._track_counter += 1
+            # Place persons near vehicles with some overlap
+            ref = random.choice(vehicle_results) if vehicle_results else None
+            if ref:
+                px = ref.bbox["x"] + random.randint(-20, 30)
+                py = ref.bbox["y"] - random.randint(0, 40)
+            else:
+                px = random.randint(50, 800)
+                py = random.randint(50, 500)
+            person_results.append(PersonDetectionResult(
+                track_id     = f"ped_{self._track_counter:05d}",
+                confidence   = round(random.uniform(0.60, 0.95), 3),
+                bbox         = {
+                    "x": max(0, px), "y": max(0, py),
+                    "w": random.randint(30, 60), "h": random.randint(60, 140),
+                },
+                frame_number = frame_number,
+            ))
+
+        return vehicle_results, person_results
 
 
 # ── singleton ────────────────────────────────────────────────────────────────
