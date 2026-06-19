@@ -1,4 +1,4 @@
-﻿import { useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet'
 import { getForecast, getRecommendations } from '../api'
 import { RiskBadge } from '../components/ViolationBadge'
@@ -8,7 +8,7 @@ import type { Prediction } from '../types'
 import 'leaflet/dist/leaflet.css'
 import PageWrapper from '../components/PageWrapper'
 
-const CENTER: [number, number] = [19.0760, 72.8777]
+const CENTER: [number, number] = [12.9716, 77.5946]  // Bengaluru city centre
 const RISK_COLORS: Record<string, string> = { low: '#16A34A', medium: '#D97706', high: '#EA580C', critical: '#DC2626' }
 const tt = { background: '#fff', border: '1px solid var(--border-light)', borderRadius: 10, color: 'var(--text-body)', fontSize: 11 }
 

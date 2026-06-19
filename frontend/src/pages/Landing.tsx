@@ -104,7 +104,7 @@ const features = [
   { icon: Eye,       title: 'License Plate Recognition', desc: 'OCR-based plate extraction with Indian format validation, confidence scoring, and officer review workflow.', bg: 'var(--accent-faint)', ic: 'var(--accent)' },
   { icon: Map,       title: 'Dynamic Heatmaps',          desc: 'Spatial-temporal violation aggregation into interactive heatmaps revealing high-risk zones and trend analysis.', bg: '#e8f8ee', ic: '#16a34a' },
   { icon: TrendingUp,title: 'Predictive Analytics',      desc: 'ML-driven hotspot forecasting using historical patterns to predict future violations and optimize patrol deployment.', bg: '#e8f0ff', ic: '#2563eb' },
-  { icon: FileText,  title: 'AI-Powered Reports',        desc: 'Claude LLM converts raw violation data into structured enforcement reports with actionable zone-level insights.', bg: '#f3e8ff', ic: '#7c3aed' },
+  { icon: FileText,  title: 'AI-Powered Reports',        desc: 'Groq LLM (Llama 3.3) converts raw violation data into structured enforcement reports with actionable zone-level insights.', bg: '#f3e8ff', ic: '#7c3aed' },
   { icon: Activity,  title: 'Congestion Scoring',        desc: 'Quantified congestion impact per violation using dwell time, vehicle type, zone priority, and lane-blocking (0–100).', bg: '#fff0e8', ic: '#c45000' },
 ]
 
@@ -140,7 +140,7 @@ const navLinks = [
 const techStack = [
   ['YOLOv8',     'Object Detection',  'var(--primary-faint)', 'var(--border-light)'],
   ['EasyOCR',    'License Plate',     'var(--accent-faint)',  'var(--border-light)'],
-  ['Claude AI',  'LLM Reporting',     '#f3e8ff',             '#e9d5ff'],
+  ['Groq AI',    'LLM Reporting',     '#f3e8ff',             '#e9d5ff'],
   ['FastAPI',    'REST + WebSocket',  '#e8f0ff',             '#bfdbfe'],
   ['React 18',   'Dashboard UI',      '#e8f8ff',             '#bae6fd'],
   ['Leaflet',    'Interactive Maps',  '#e8f8ee',             '#a7f3d0'],
@@ -380,7 +380,7 @@ export default function Landing() {
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
             style={{ maxWidth: 620, margin: '0 auto 2.5rem', fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.75 }}
           >
-            ParkIQ uses computer vision, license plate recognition, and Claude AI to detect illegal parking, quantify congestion impact, and enable data-driven enforcement in real time.
+            ParkIQ uses computer vision, license plate recognition, and Groq AI to detect illegal parking, quantify congestion impact, and enable data-driven enforcement in real time.
           </motion.p>
 
           <motion.div
@@ -423,7 +423,7 @@ export default function Landing() {
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <motion.div variants={fadeUp} style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <h2 style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-heading)', marginBottom: 12 }}>Our Goals & Vision</h2>
-            <p style={{ color: 'var(--text-muted)', maxWidth: 520, margin: '0 auto', lineHeight: 1.7 }}>Building AI-powered infrastructure for safer, smarter Indian cities — one parking zone at a time.</p>
+            <p style={{ color: 'var(--text-muted)', maxWidth: 520, margin: '0 auto', lineHeight: 1.7 }}>Building AI-powered infrastructure for safer, smarter Indian cities — starting with Bengaluru, one parking zone at a time.</p>
           </motion.div>
           <motion.div variants={stagger(0.12)} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 22 }}>
             {goals.map(({ icon: Icon, title, desc, bg, ic }) => (

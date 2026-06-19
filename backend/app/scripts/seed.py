@@ -16,14 +16,14 @@ from app.models.camera import Camera, CameraStatus
 
 
 CAMERAS = [
-    ("Dadar Station Camera 1",   "Dadar Railway Station",  19.0178, 72.8478, "metro_station"),
-    ("Andheri West Camera",      "Andheri Metro Station",  19.1197, 72.8468, "metro_station"),
-    ("Bandra Junction Cam",      "Bandra Junction",        19.0544, 72.8402, "commercial"),
-    ("Linking Road Camera",      "Linking Road",           19.0617, 72.8369, "commercial"),
-    ("Worli Sea Face Cam",       "Worli Sea Face",         19.0119, 72.8157, "general"),
-    ("Kurla Complex Camera",     "Kurla LBS Road",         19.0718, 72.8847, "commercial"),
-    ("Powai Lake Camera",        "Powai Junction",         19.1177, 72.9067, "intersection"),
-    ("Dharavi Junction Cam",     "Dharavi Cross Road",     19.0440, 72.8557, "intersection"),
+    ("MG Road Camera 1",         "MG Road Junction",          12.9757, 77.6011, "commercial"),
+    ("Silk Board Junction Cam",   "Silk Board Flyover",        12.9176, 77.6228, "intersection"),
+    ("Marathahalli Camera",       "Marathahalli Bridge",       12.9564, 77.7010, "commercial"),
+    ("Koramangala Camera",        "Koramangala 80 Ft Road",    12.9344, 77.6146, "commercial"),
+    ("Whitefield Camera",         "Whitefield Main Road",      12.9698, 77.7499, "metro_station"),
+    ("Jayanagar Camera",          "Jayanagar 4th Block",       12.9250, 77.5938, "general"),
+    ("Rajajinagar Camera",        "Rajajinagar Circle",        12.9877, 77.5479, "intersection"),
+    ("Hebbal Flyover Cam",        "Hebbal Interchange",        13.0358, 77.5970, "intersection"),
 ]
 
 

@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { MapContainer, TileLayer, Circle, Popup } from 'react-leaflet'
 import { getZones, createZone } from '../api'
@@ -8,7 +8,7 @@ import type { Zone } from '../types'
 import 'leaflet/dist/leaflet.css'
 import PageWrapper from '../components/PageWrapper'
 
-const CENTER: [number, number] = [19.0760, 72.8777]
+const CENTER: [number, number] = [12.9716, 77.5946]  // Bengaluru city centre
 const ZONE_COLORS: Record<string, string> = {
   no_parking:    '#DC2626',
   intersection:  '#EA580C',

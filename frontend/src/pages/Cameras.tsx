@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet'
 import { getCameras, createCamera, updateCamera } from '../api'
@@ -9,7 +9,7 @@ import type { Camera } from '../types'
 import 'leaflet/dist/leaflet.css'
 import PageWrapper from '../components/PageWrapper'
 
-const CENTER: [number, number] = [19.0760, 72.8777]
+const CENTER: [number, number] = [12.9716, 77.5946]  // Bengaluru city centre
 const STATUS_COLORS: Record<string, string> = {
   active:      '#16A34A',
   inactive:    '#9CA3AF',

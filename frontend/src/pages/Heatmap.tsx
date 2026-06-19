@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet'
 import { getHeatmap, getHotspots } from '../api'
@@ -6,7 +6,7 @@ import 'leaflet/dist/leaflet.css'
 import PageWrapper from '../components/PageWrapper'
 
 const SEV_COLORS = ['#2A7B3A','#65A30D','#D97706','#EA580C','#C42020']
-const CENTER: [number, number] = [19.076, 72.8777]
+const CENTER: [number, number] = [12.9716, 77.5946]  // Bengaluru city centre
 const TIME_OPTS = [{ v: 6, l: '6h' },{ v: 12, l: '12h' },{ v: 24, l: '24h' },{ v: 48, l: '2d' },{ v: 168, l: '7d' }]
 
 export default function Heatmap() {
