@@ -187,16 +187,29 @@ def process_frame(
         {"vehicle_class": d.vehicle_class, "bbox": d.bbox, "confidence": d.confidence}
         for d in detections
     ]
-    active_tracks = tracker.update(det_dicts)
+    tracker.update(det_dicts)
 
-    # Sync parked status from tracker back to detections
+    # Sync parked status from tracker back to detections using IoU matching
+    # (matching by vehicle_class alone caused ALL cars to be marked parked)
     parked_tracks = tracker.get_parked_tracks()
+
+    def _iou_det_track(det_bbox: Dict, track_bbox: Dict) -> float:
+        x1, y1 = max(det_bbox["x"], track_bbox["x"]), max(det_bbox["y"], track_bbox["y"])
+        x2 = min(det_bbox["x"] + det_bbox["w"], track_bbox["x"] + track_bbox["w"])
+        y2 = min(det_bbox["y"] + det_bbox["h"], track_bbox["y"] + track_bbox["h"])
+        inter = max(0, x2 - x1) * max(0, y2 - y1)
+        union = det_bbox["w"] * det_bbox["h"] + track_bbox["w"] * track_bbox["h"] - inter
+        return inter / union if union > 0 else 0.0
+
     for det in detections:
+        best_iou, best_track = 0.0, None
         for pt in parked_tracks:
-            if det.vehicle_class == pt.vehicle_class:
-                det.is_parked = True
-                det.dwell_seconds = pt.dwell_seconds
-                break
+            iou = _iou_det_track(det.bbox, pt.bbox)
+            if iou > best_iou:
+                best_iou, best_track = iou, pt
+        if best_track and best_iou >= 0.3:
+            det.is_parked = True
+            det.dwell_seconds = best_track.dwell_seconds
 
     # Run OCR on every detected vehicle crop → build plate_texts dict
     plate_results: Dict[str, object] = {}
@@ -345,6 +358,12 @@ def process_frame(
     db.add(log_entry)
     db.commit()
 
+    # Build an absolute URL for the annotated image so the browser can load it
+    # ann_url is something like /storage/annotated/filename.jpg
+    from app.config import settings as _s
+    backend_host = _s.BACKEND_PUBLIC_URL.rstrip("/")
+    annotated_full_url = f"{backend_host}{ann_url}" if ann_url and ann_url.startswith("/") else ann_url
+
     return {
         "frame_number":       frame_number,
         "vehicle_count":      len(detections),
@@ -352,6 +371,6 @@ def process_frame(
         "violations_created": len(new_violations),
         "violation_ids":      [v.id for v in new_violations],
         "congestion_score":   congestion.congestion_score,
-        "annotated_image_url": ann_url,
+        "annotated_image_url": annotated_full_url,
         "log_id":             log_entry.id,
     }

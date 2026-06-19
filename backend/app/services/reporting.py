@@ -1,5 +1,5 @@
 """
-LLM-powered report generation using Claude API.
+LLM-powered report generation using Groq API (llama-3.3-70b-versatile).
 Converts raw violation data into structured, human-readable enforcement reports.
 """
 import logging
@@ -99,7 +99,7 @@ def generate_report_with_llm(
     zone_ids: Optional[List[int]] = None,
     user_id: Optional[int] = None,
 ) -> Report:
-    """Generate an LLM-powered enforcement report using Claude."""
+    """Generate an LLM-powered enforcement report using Groq."""
     summary_data = _build_violation_summary(violations)
     zone_breakdown = _build_zone_breakdown(violations, db)
 
@@ -139,36 +139,42 @@ Generate a comprehensive enforcement report with actionable recommendations."""
     output_tokens = 0
     model_used = "fallback"
 
-    if settings.ANTHROPIC_API_KEY:
+    if settings.GROQ_API_KEY:
         try:
-            import anthropic
-            client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-            response = client.messages.create(
-                model=settings.CLAUDE_MODEL,
-                max_tokens=settings.CLAUDE_MAX_TOKENS,
-                system=SYSTEM_PROMPT,
-                messages=[{"role": "user", "content": user_message}],
+            from groq import Groq
+            client = Groq(api_key=settings.GROQ_API_KEY)
+            response = client.chat.completions.create(
+                model=settings.GROQ_MODEL,
+                max_tokens=settings.GROQ_MAX_TOKENS,
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user",   "content": user_message},
+                ],
             )
-            raw = response.content[0].text
-            input_tokens = response.usage.input_tokens
-            output_tokens = response.usage.output_tokens
-            model_used = settings.CLAUDE_MODEL
+            raw = response.choices[0].message.content
+            input_tokens  = response.usage.prompt_tokens
+            output_tokens = response.usage.completion_tokens
+            model_used    = settings.GROQ_MODEL
 
             try:
-                parsed = json.loads(raw)
-                title = parsed.get("title", title)
+                # Strip markdown fences if Groq wraps JSON in ```json … ```
+                clean = raw.strip()
+                if clean.startswith("```"):
+                    clean = clean.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+                parsed = json.loads(clean)
+                title        = parsed.get("title", title)
                 summary_text = parsed.get("summary", summary_text)
-                content = parsed.get("content", raw)
-                structured_data["key_metrics"] = parsed.get("key_metrics", {})
+                content      = parsed.get("content", raw)
+                structured_data["key_metrics"]    = parsed.get("key_metrics", {})
                 structured_data["priority_zones"] = parsed.get("priority_zones", [])
                 structured_data["recommendations"] = parsed.get("recommendations", [])
             except json.JSONDecodeError:
                 content = raw
         except Exception as e:
-            logger.error(f"Claude API error: {e}")
+            logger.error(f"Groq API error: {e}")
             content = _generate_fallback_report(summary_data, zone_breakdown, report_type, period_str)
     else:
-        logger.info("No ANTHROPIC_API_KEY set, using fallback report generator")
+        logger.info("No GROQ_API_KEY set — using fallback report generator")
         content = _generate_fallback_report(summary_data, zone_breakdown, report_type, period_str)
 
     report = Report(
@@ -199,7 +205,7 @@ def _generate_fallback_report(
     report_type: ReportType,
     period_str: str,
 ) -> str:
-    """Template-based fallback when Claude API is unavailable."""
+    """Template-based fallback when Groq API is unavailable."""
     top_zones = "\n".join(
         f"- **{z['name']}** ({z['zone_type']}): {z['count']} violations, avg impact {z['avg_congestion']}/100"
         for z in zone_breakdown[:5]
