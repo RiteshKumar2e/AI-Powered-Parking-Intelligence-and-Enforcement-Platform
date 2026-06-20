@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from typing import Optional
 from app.models.user import UserRole
 
@@ -17,7 +17,7 @@ class TokenResponse(BaseModel):
 
 
 class UserCreate(BaseModel):
-    email: EmailStr
+    email: str
     username: str
     full_name: str
     password: str
@@ -26,7 +26,7 @@ class UserCreate(BaseModel):
 
 class UserUpdate(BaseModel):
     full_name: Optional[str] = None
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     role: Optional[UserRole] = None
     is_active: Optional[bool] = None
 
