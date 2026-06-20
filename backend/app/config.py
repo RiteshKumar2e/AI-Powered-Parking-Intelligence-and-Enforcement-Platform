@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "sqlite:///./parking_enforcement.db"
     DATABASE_ECHO: bool = False
 
+    # Turso (libSQL) — if set, takes priority over DATABASE_URL
+    TURSO_DATABASE_URL: Optional[str] = None  # e.g. libsql://parkiq-xxx.aws-ap-south-1.turso.io
+    TURSO_AUTH_TOKEN: Optional[str] = None
+
     # Redis
     REDIS_URL: str = "redis://localhost:6379"
     REDIS_ENABLED: bool = False
