@@ -7,6 +7,35 @@ from app.config import settings
 Base = declarative_base()
 
 
+class _LibSQLWrapper:
+    """
+    Wraps a libsql_experimental connection to add stubs for SQLAlchemy's
+    pysqlite dialect, which calls create_function() at connect time for
+    REGEXP support. libsql doesn't implement this API.
+    """
+    __slots__ = ("_conn",)
+
+    def __init__(self, conn):
+        object.__setattr__(self, "_conn", conn)
+
+    # --- SQLAlchemy pysqlite stubs ---
+    def create_function(self, *args, **kwargs):
+        pass
+
+    def create_aggregate(self, *args, **kwargs):
+        pass
+
+    # --- Delegation ---
+    def __getattr__(self, name):
+        return getattr(object.__getattribute__(self, "_conn"), name)
+
+    def __setattr__(self, name, value):
+        if name == "_conn":
+            object.__setattr__(self, name, value)
+        else:
+            setattr(object.__getattribute__(self, "_conn"), name, value)
+
+
 def _build_engine():
     # Turso (libSQL) takes priority when both env vars are set
     if settings.TURSO_DATABASE_URL and settings.TURSO_AUTH_TOKEN:
@@ -16,13 +45,13 @@ def _build_engine():
         turso_token = settings.TURSO_AUTH_TOKEN
 
         def _get_conn():
-            return libsql.connect(database=turso_url, auth_token=turso_token)
+            raw = libsql.connect(database=turso_url, auth_token=turso_token)
+            return _LibSQLWrapper(raw)
 
         return create_engine(
             "sqlite+pysqlite:///:memory:",
             creator=_get_conn,
             poolclass=StaticPool,
-            connect_args={"check_same_thread": False},
             echo=settings.DATABASE_ECHO,
         )
 
