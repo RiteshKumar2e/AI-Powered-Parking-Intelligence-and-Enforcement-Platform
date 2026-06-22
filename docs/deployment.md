@@ -7,8 +7,8 @@
 
 | Service | Platform | URL (example) |
 |---|---|---|
-| React Frontend | Vercel | `https://parkiq.vercel.app` |
-| FastAPI Backend | Render (Web Service) | `https://parkiq-backend.onrender.com` |
+| React Frontend | Vercel | `https://park-iq-ho.vercel.app` |
+| FastAPI Backend | Render (Web Service) | `https://park-iq-nbvy.onrender.com` |
 | Database | Turso (libSQL) | `libsql://parkiq-riteshkumar2e.aws-ap-south-1.turso.io` |
 
 > **Turso kyun?** Render ka free tier ephemeral filesystem deta hai — SQLite restart pe reset ho jaata hai. Turso ek managed cloud SQLite (libSQL) database hai jo hamesha persistent rehta hai, free tier mein bhi. No extra setup needed on Render.
@@ -291,10 +291,10 @@ turso db tokens create parkiq-riteshkumar2e
 ## Quick Reference — Useful URLs after deploy
 
 ```
-Backend API:   https://parkiq-backend.onrender.com/api/v1/
-API Docs:      https://parkiq-backend.onrender.com/api/docs
-Health Check:  https://parkiq-backend.onrender.com/api/v1/health
-Frontend App:  https://parkiq.vercel.app
+Backend API:   https://park-iq-nbvy.onrender.com/api/v1/
+API Docs:      https://park-iq-nbvy.onrender.com/api/docs
+Health Check:  https://park-iq-nbvy.onrender.com/api/v1/health
+Frontend App:  https://park-iq-ho.vercel.app
 Turso DB:      libsql://parkiq-riteshkumar2e.aws-ap-south-1.turso.io
 
 Demo Login:
