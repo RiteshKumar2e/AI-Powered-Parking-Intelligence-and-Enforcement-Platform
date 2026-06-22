@@ -7,46 +7,43 @@ from app.config import settings
 Base = declarative_base()
 
 
-class _LibSQLWrapper:
+def _patch_pysqlite_for_libsql():
     """
-    Wraps a libsql_experimental connection to add stubs for SQLAlchemy's
-    pysqlite dialect, which calls create_function() at connect time for
-    REGEXP support. libsql doesn't implement this API.
+    SQLAlchemy's pysqlite dialect calls create_function() on every new
+    connection to register a REGEXP helper (sqlite3 API). libsql_experimental
+    doesn't implement this method, so we wrap on_connect to swallow the
+    AttributeError instead of crashing at startup.
     """
-    __slots__ = ("_conn",)
+    from sqlalchemy.dialects.sqlite import pysqlite as _pysqlite
+    _orig = _pysqlite.SQLiteDialect_pysqlite.on_connect
 
-    def __init__(self, conn):
-        object.__setattr__(self, "_conn", conn)
+    def _safe_on_connect(self):
+        fn = _orig(self)
+        if fn is None:
+            return None
 
-    # --- SQLAlchemy pysqlite stubs ---
-    def create_function(self, *args, **kwargs):
-        pass
+        def safe_fn(dbapi_connection):
+            try:
+                fn(dbapi_connection)
+            except AttributeError:
+                pass  # libsql doesn't have create_function — skip REGEXP setup
 
-    def create_aggregate(self, *args, **kwargs):
-        pass
+        return safe_fn
 
-    # --- Delegation ---
-    def __getattr__(self, name):
-        return getattr(object.__getattribute__(self, "_conn"), name)
-
-    def __setattr__(self, name, value):
-        if name == "_conn":
-            object.__setattr__(self, name, value)
-        else:
-            setattr(object.__getattribute__(self, "_conn"), name, value)
+    _pysqlite.SQLiteDialect_pysqlite.on_connect = _safe_on_connect
 
 
 def _build_engine():
-    # Turso (libSQL) takes priority when both env vars are set
+    # ── Turso (libSQL) ────────────────────────────────────────────────────────
     if settings.TURSO_DATABASE_URL and settings.TURSO_AUTH_TOKEN:
         import libsql_experimental as libsql
+        _patch_pysqlite_for_libsql()
 
         turso_url = settings.TURSO_DATABASE_URL
         turso_token = settings.TURSO_AUTH_TOKEN
 
         def _get_conn():
-            raw = libsql.connect(database=turso_url, auth_token=turso_token)
-            return _LibSQLWrapper(raw)
+            return libsql.connect(database=turso_url, auth_token=turso_token)
 
         return create_engine(
             "sqlite+pysqlite:///:memory:",
@@ -55,6 +52,7 @@ def _build_engine():
             echo=settings.DATABASE_ECHO,
         )
 
+    # ── Local SQLite ──────────────────────────────────────────────────────────
     if settings.DATABASE_URL.startswith("sqlite"):
         eng = create_engine(
             settings.DATABASE_URL,
@@ -72,6 +70,7 @@ def _build_engine():
 
         return eng
 
+    # ── PostgreSQL / other ────────────────────────────────────────────────────
     return create_engine(
         settings.DATABASE_URL,
         pool_pre_ping=True,
