@@ -49,7 +49,7 @@ class Settings(BaseSettings):
     # Frame ingestion
     FRAME_SAMPLE_RATE: int = 5  # process every Nth frame
     MAX_DWELL_SECONDS: int = 300  # 5 min before violation flag
-    BACKEND_PUBLIC_URL: str = "http://localhost:8000"  # used to build annotated image URLs
+    BACKEND_PUBLIC_URL: str = "https://park-iq-nbvy.onrender.com"
 
     class Config:
         env_file = ".env"

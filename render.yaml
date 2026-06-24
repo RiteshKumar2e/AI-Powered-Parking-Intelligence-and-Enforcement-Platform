@@ -1,0 +1,68 @@
+services:
+  - type: web
+    name: park-iq
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+
+    envVars:
+      # ── Public URL of this service (used to build image URLs returned to frontend) ──
+      - key: BACKEND_PUBLIC_URL
+        value: https://park-iq-nbvy.onrender.com
+
+      # ── CORS: allow Vercel frontend + local dev ──────────────────────────────────
+      - key: ALLOWED_ORIGINS
+        value: https://park-iq-ho.vercel.app,http://localhost:5173,http://localhost:3000
+
+      # ── App ────────────────────────────────────────────────────────────────────────
+      - key: APP_NAME
+        value: "Parking Intelligence & Enforcement Platform"
+      - key: APP_VERSION
+        value: "1.0.0"
+      - key: DEBUG
+        value: "False"
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "1440"
+
+      # ── Secrets (set values in Render dashboard → Environment) ────────────────────
+      - key: SECRET_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+
+      # ── Turso (libSQL) ────────────────────────────────────────────────────────────
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+
+      # ── ML ────────────────────────────────────────────────────────────────────────
+      - key: SIMULATE_DETECTIONS
+        value: "False"
+      - key: YOLO_MODEL_PATH
+        value: models/yolov8s.pt
+      - key: YOLO_CONFIDENCE
+        value: "0.42"
+      - key: GPU_ENABLED
+        value: "False"
+      - key: FRAME_SAMPLE_RATE
+        value: "5"
+      - key: MAX_DWELL_SECONDS
+        value: "300"
+
+      # ── Groq ──────────────────────────────────────────────────────────────────────
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+      - key: GROQ_MAX_TOKENS
+        value: "2048"
+
+      # ── Redis (disabled — free tier) ──────────────────────────────────────────────
+      - key: REDIS_ENABLED
+        value: "False"
+
+      # ── Storage ───────────────────────────────────────────────────────────────────
+      - key: STORAGE_BACKEND
+        value: local
+      - key: LOCAL_STORAGE_PATH
+        value: ./storage
