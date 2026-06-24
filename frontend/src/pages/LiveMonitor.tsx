@@ -48,14 +48,15 @@ export default function LiveMonitor() {
   const { data: congestionData }    = useQuery({ queryKey: ['congestion-timeline'], queryFn: () => getCongestionTimeline(6, 15), refetchInterval: 60000 })
   const { data: currentCongestion } = useQuery({ queryKey: ['current-congestion'], queryFn: getCurrentCongestion, refetchInterval: 15000 })
 
-  const { connected: wsConnected } = useWebSocket('global', useCallback((msg) => {
+  const handleWsMessage = useCallback((msg: { type: string; data: unknown }) => {
     if (msg.type === 'new_violation' || msg.type === 'congestion_update') {
       setLiveEvents(prev => [
         { ...msg.data as Record<string, unknown>, _type: msg.type, _ts: new Date().toISOString() },
         ...prev.slice(0, 19),
       ])
     }
-  }, []))
+  }, [])
+  const { connected: wsConnected } = useWebSocket('global', handleWsMessage)
 
   // Keep processingRef in sync so interval callback reads fresh value
   useEffect(() => { processingRef.current = processing }, [processing])

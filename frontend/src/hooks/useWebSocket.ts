@@ -10,7 +10,11 @@ export function useWebSocket(
   const [connected, setConnected]  = useState(false)
   const wsRef        = useRef<WebSocket | null>(null)
   const reconnectRef = useRef<ReturnType<typeof setTimeout>>()
-  const mountedRef   = useRef(true)   // guards against reconnect after unmount
+  const mountedRef   = useRef(true)
+  const onMessageRef = useRef(onMessage)
+
+  // Keep the callback current without triggering reconnects
+  useEffect(() => { onMessageRef.current = onMessage })
 
   const connect = useCallback(() => {
     if (!enabled || !mountedRef.current) return
@@ -30,7 +34,6 @@ export function useWebSocket(
     ws.onopen = () => {
       if (!mountedRef.current) { ws.close(); return }
       setConnected(true)
-      // keepalive ping every 25s
       const ping = setInterval(() => {
         if (ws.readyState === WebSocket.OPEN) ws.send('ping')
       }, 25000)
@@ -39,24 +42,18 @@ export function useWebSocket(
 
     ws.onmessage = (e) => {
       if (!mountedRef.current) return
-      try {
-        const msg = JSON.parse(e.data) as WSMessage
-        onMessage(msg)
-      } catch {}
+      try { onMessageRef.current(JSON.parse(e.data) as WSMessage) } catch {}
     }
 
     ws.onclose = () => {
-      if (!mountedRef.current) return   // don't reconnect after unmount
+      if (wsRef.current !== ws) return   // stale socket — cleanup already ran
+      if (!mountedRef.current) return    // unmounted — no reconnect
       setConnected(false)
       reconnectRef.current = setTimeout(connect, 3000)
     }
 
-    ws.onerror = () => {
-      if (!mountedRef.current) return
-      setConnected(false)
-      // onclose will fire after onerror and handle reconnect
-    }
-  }, [channel, onMessage, enabled])
+    ws.onerror = () => { /* onclose fires next and handles reconnect */ }
+  }, [channel, enabled])   // onMessage intentionally omitted — kept via ref
 
   useEffect(() => {
     mountedRef.current = true
@@ -65,7 +62,15 @@ export function useWebSocket(
       mountedRef.current = false
       clearTimeout(reconnectRef.current)
       const ws = wsRef.current
-      if (ws && ws.readyState !== WebSocket.CLOSED) {
+      wsRef.current = null
+      if (!ws) return
+      if (ws.readyState === WebSocket.CONNECTING) {
+        // Defer close until handshake completes — avoids "closed before established" browser error
+        ws.onopen = () => ws.close(1000, 'component unmounted')
+        ws.onerror = null
+        ws.onmessage = null
+        ws.onclose = null
+      } else {
         ws.close(1000, 'component unmounted')
       }
     }
