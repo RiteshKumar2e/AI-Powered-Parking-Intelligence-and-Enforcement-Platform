@@ -1,10 +1,8 @@
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import Response
 from contextlib import asynccontextmanager
 from datetime import datetime
-import re
 import logging
 import os
 
@@ -42,34 +40,10 @@ app = FastAPI(
     redirect_slashes=False,
 )
 
-# CORS — explicit list from env + always allow any localhost port
-origins = [o.strip() for o in settings.ALLOWED_ORIGINS.split(",") if o.strip()]
-_localhost_re = re.compile(r"^https?://localhost(:\d+)?$")
-
-@app.middleware("http")
-async def cors_preflight_middleware(request: Request, call_next):
-    origin = request.headers.get("origin", "")
-    allowed = origin in origins or bool(_localhost_re.match(origin))
-    if request.method == "OPTIONS":
-        response = Response(status_code=204)
-        if allowed:
-            response.headers["Access-Control-Allow-Origin"] = origin
-            response.headers["Access-Control-Allow-Credentials"] = "true"
-            response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,PATCH,DELETE,OPTIONS"
-            response.headers["Access-Control-Allow-Headers"] = "*"
-            response.headers["Access-Control-Max-Age"] = "600"
-        return response
-    response = await call_next(request)
-    if allowed:
-        response.headers["Access-Control-Allow-Origin"] = origin
-        response.headers["Access-Control-Allow-Credentials"] = "true"
-    return response
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_origin_regex=r"https?://localhost(:\d+)?",
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
