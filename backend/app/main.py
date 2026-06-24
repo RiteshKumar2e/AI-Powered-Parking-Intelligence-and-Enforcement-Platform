@@ -9,6 +9,7 @@ import os
 from app.config import settings
 from app.database import create_tables
 from app.websocket.manager import manager
+from app.scripts.seed import seed_database
 
 from app.api import auth, cameras, zones, violations, plates, congestion, hotspots, predictions, reports, dashboard, search, users, history, evaluation
 
@@ -21,6 +22,8 @@ async def lifespan(app: FastAPI):
     logger.info("Starting Parking Intelligence Platform...")
     create_tables()
     logger.info("Database tables initialized")
+    seed_database()
+    logger.info("Database seeded")
     os.makedirs(settings.LOCAL_STORAGE_PATH, exist_ok=True)
     os.makedirs(f"{settings.LOCAL_STORAGE_PATH}/evidence", exist_ok=True)
     os.makedirs(f"{settings.LOCAL_STORAGE_PATH}/annotated", exist_ok=True)

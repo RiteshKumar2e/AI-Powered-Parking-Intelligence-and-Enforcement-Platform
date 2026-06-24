@@ -66,7 +66,6 @@ def seed_cameras(db):
 
 
 def seed_database():
-    create_tables()
     db = SessionLocal()
     try:
         seed_users(db)
@@ -82,4 +81,5 @@ def seed_database():
 
 
 if __name__ == "__main__":
+    create_tables()
     seed_database()
