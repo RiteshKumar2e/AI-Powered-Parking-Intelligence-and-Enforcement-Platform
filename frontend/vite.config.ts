@@ -7,8 +7,9 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        target: 'https://park-iq-nbvy.onrender.com',
         changeOrigin: true,
+        secure: true,
         configure: (proxy) => {
           proxy.on('error', (err: Error & { code?: string }) => {
             if (err.code === 'ECONNRESET' || err.code === 'ECONNREFUSED') return
@@ -17,8 +18,10 @@ export default defineConfig({
         },
       },
       '/ws': {
-        target: 'ws://127.0.0.1:8000',
+        target: 'wss://park-iq-nbvy.onrender.com',
         ws: true,
+        changeOrigin: true,
+        secure: true,
         configure: (proxy) => {
           proxy.on('error', (err: Error & { code?: string }) => {
             if (err.code === 'ECONNRESET' || err.code === 'ECONNREFUSED') return
@@ -27,8 +30,9 @@ export default defineConfig({
         },
       },
       '/storage': {
-        target: 'http://127.0.0.1:8000',
+        target: 'https://park-iq-nbvy.onrender.com',
         changeOrigin: true,
+        secure: true,
         configure: (proxy) => {
           proxy.on('error', (err: Error & { code?: string }) => {
             if (err.code === 'ECONNRESET' || err.code === 'ECONNREFUSED') return
