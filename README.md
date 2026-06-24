@@ -45,7 +45,6 @@ A production-grade AI system for detecting illegal parking, quantifying congesti
 | **RBAC** | 4 roles: Admin, Officer, Analyst, Viewer |
 
 ---
-
 ## Quick Start
 
 ### Option 1: Local Development (No Docker)
