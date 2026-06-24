@@ -15,7 +15,7 @@ export interface AuthState {
   token: string | null
 }
 
-export type ViolationStatus = 'pending_review' | 'confirmed' | 'dismissed' | 'ticket_issued' | 'appealed'
+export type ViolationStatus = 'pending_review' | 'confirmed' | 'dismissed' | 'ticket_issued' | 'appealed' | 'flagged'
 export type ViolationType =
   | 'illegal_parking' | 'double_parking' | 'no_parking_zone'
   | 'blocking_intersection' | 'pavement_parking' | 'bus_stop_parking'
@@ -151,6 +151,63 @@ export interface Report {
   llm_model: string | null
   input_tokens: number
   output_tokens: number
+  created_at: string
+}
+
+export type WatchlistReason = 'stolen' | 'warrant' | 'unpaid_fines' | 'flagged' | 'other'
+export type AlertLevel = 'info' | 'warning' | 'critical'
+export interface WatchlistEntry {
+  id: number
+  plate_number: string
+  reason: WatchlistReason
+  alert_level: AlertLevel
+  notes?: string
+  is_active: boolean
+  created_at: string
+}
+
+export type DisputeStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
+export type DisputeReason = 'incorrect_plate' | 'vehicle_not_present' | 'valid_permit' | 'signage_unclear' | 'other'
+export interface Dispute {
+  id: number
+  violation_id: number
+  submitted_by_name: string
+  submitted_by_contact: string
+  reason_category: DisputeReason
+  description: string
+  status: DisputeStatus
+  resolution_notes?: string
+  submitted_at: string
+  resolved_at?: string
+}
+
+export type PaymentStatus = 'unpaid' | 'paid' | 'partial' | 'overdue' | 'escalated' | 'waived'
+export interface Payment {
+  id: number
+  violation_id: number
+  ticket_number: string
+  amount_due: number
+  amount_paid: number
+  payment_status: PaymentStatus
+  due_date?: string
+  paid_at?: string
+  payment_method?: string
+  transaction_ref?: string
+  escalation_count: number
+  notes?: string
+  created_at: string
+}
+
+export interface AuditLog {
+  id: number
+  actor_id?: number
+  actor_role?: string
+  action: string
+  entity_type?: string
+  entity_id?: number
+  old_value?: Record<string, unknown>
+  new_value?: Record<string, unknown>
+  ip_address?: string
   created_at: string
 }
 

@@ -2,7 +2,8 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { motion, type Variants } from 'framer-motion'
 import {
   LayoutDashboard, Video, AlertTriangle, Map, TrendingUp,
-  FileText, Camera, MapPin, Search, Shield, LogOut, History
+  FileText, Camera, MapPin, Search, Shield, LogOut, History,
+  ShieldAlert, MessageSquare, CreditCard, Zap, ClipboardList
 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import type { UserRole } from '../types'
@@ -16,15 +17,20 @@ type NavItem = {
 
 const nav: NavItem[] = [
   { to: '/app/dashboard',   icon: LayoutDashboard, label: 'Dashboard',    roles: ['admin', 'officer', 'analyst', 'viewer'] },
+  { to: '/app/field',       icon: Zap,             label: 'Field Capture',roles: ['admin', 'officer'] },
   { to: '/app/monitor',     icon: Video,           label: 'Live Monitor', roles: ['admin', 'officer'] },
-  { to: '/app/history',     icon: History,         label: 'History',      roles: ['admin', 'officer', 'analyst', 'viewer'] },
   { to: '/app/violations',  icon: AlertTriangle,   label: 'Violations',   roles: ['admin', 'officer', 'analyst', 'viewer'] },
+  { to: '/app/watchlist',   icon: ShieldAlert,     label: 'Watchlist',    roles: ['admin', 'officer'] },
+  { to: '/app/payments',    icon: CreditCard,      label: 'Payments',     roles: ['admin', 'officer', 'analyst', 'viewer'] },
+  { to: '/app/disputes',    icon: MessageSquare,   label: 'Disputes',     roles: ['admin', 'officer'] },
   { to: '/app/heatmap',     icon: Map,             label: 'Heatmap',      roles: ['admin', 'officer', 'analyst', 'viewer'] },
   { to: '/app/predictions', icon: TrendingUp,      label: 'Predictions',  roles: ['admin', 'analyst'] },
   { to: '/app/reports',     icon: FileText,        label: 'Reports',      roles: ['admin', 'analyst'] },
   { to: '/app/cameras',     icon: Camera,          label: 'Cameras',      roles: ['admin', 'officer'] },
   { to: '/app/zones',       icon: MapPin,          label: 'Zones',        roles: ['admin', 'analyst', 'viewer'] },
   { to: '/app/search',      icon: Search,          label: 'Search',       roles: ['admin', 'officer', 'analyst', 'viewer'] },
+  { to: '/app/history',     icon: History,         label: 'History',      roles: ['admin', 'officer', 'analyst', 'viewer'] },
+  { to: '/app/audit',       icon: ClipboardList,   label: 'Audit Log',    roles: ['admin'] },
 ]
 
 const ROLE_BADGE: Record<UserRole, { label: string; bg: string; color: string }> = {

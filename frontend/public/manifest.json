@@ -1,0 +1,34 @@
+{
+  "name": "ParkIQ — Smart Parking Enforcement",
+  "short_name": "ParkIQ",
+  "description": "AI-Powered Parking Intelligence & Enforcement Platform",
+  "start_url": "/app/dashboard",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#1E3A08",
+  "background_color": "#F8FAF7",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Field Capture",
+      "short_name": "Capture",
+      "description": "Quick violation capture from the field",
+      "url": "/app/field",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "url": "/app/dashboard",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    }
+  ]
+}

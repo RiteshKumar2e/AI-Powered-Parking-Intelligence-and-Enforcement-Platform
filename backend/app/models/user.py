@@ -22,6 +22,9 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     role = Column(Enum(UserRole), default=UserRole.viewer, nullable=False)
     is_active = Column(Boolean, default=True)
+    phone_number = Column(String, nullable=True)
+    notify_email = Column(Boolean, default=False)
+    notify_sms = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

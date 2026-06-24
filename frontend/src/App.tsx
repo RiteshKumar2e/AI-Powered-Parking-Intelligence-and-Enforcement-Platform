@@ -16,6 +16,12 @@ import Zones from './pages/Zones'
 import Search from './pages/Search'
 import History from './pages/History'
 import Register from './pages/Register'
+import Watchlist from './pages/Watchlist'
+import Disputes from './pages/Disputes'
+import DisputeForm from './pages/DisputeForm'
+import Payments from './pages/Payments'
+import AuditLog from './pages/AuditLog'
+import FieldCapture from './pages/FieldCapture'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth()
@@ -34,57 +40,41 @@ export default function App() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
+        {/* Public routes */}
         <Route path="/" element={<Landing />} />
         <Route path="/login"    element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route
-          path="/app"
-          element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
-          }
-        >
+        <Route path="/dispute"  element={<DisputeForm />} />
+
+        {/* Protected app shell */}
+        <Route path="/app" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route index element={<Navigate to="/app/dashboard" replace />} />
 
           {/* All roles */}
-          <Route path="dashboard"  element={<Dashboard />} />
-          <Route path="violations" element={<Violations />} />
-          <Route path="violations/:id" element={<ViolationDetail />} />
-          <Route path="heatmap"    element={<Heatmap />} />
-          <Route path="search"     element={<Search />} />
-          <Route path="history"    element={<History />} />
+          <Route path="dashboard"       element={<Dashboard />} />
+          <Route path="violations"      element={<Violations />} />
+          <Route path="violations/:id"  element={<ViolationDetail />} />
+          <Route path="heatmap"         element={<Heatmap />} />
+          <Route path="search"          element={<Search />} />
+          <Route path="history"         element={<History />} />
+          <Route path="payments"        element={<Payments />} />
+          <Route path="disputes"        element={<Disputes />} />
 
           {/* Admin + Officer */}
-          <Route path="monitor" element={
-            <RoleGuard roles={['admin', 'officer']}>
-              <LiveMonitor />
-            </RoleGuard>
-          } />
-          <Route path="cameras" element={
-            <RoleGuard roles={['admin', 'officer']}>
-              <Cameras />
-            </RoleGuard>
-          } />
+          <Route path="monitor" element={<RoleGuard roles={['admin', 'officer']}><LiveMonitor /></RoleGuard>} />
+          <Route path="cameras" element={<RoleGuard roles={['admin', 'officer']}><Cameras /></RoleGuard>} />
+          <Route path="watchlist" element={<RoleGuard roles={['admin', 'officer']}><Watchlist /></RoleGuard>} />
+          <Route path="field" element={<RoleGuard roles={['admin', 'officer']}><FieldCapture /></RoleGuard>} />
 
           {/* Admin + Analyst */}
-          <Route path="predictions" element={
-            <RoleGuard roles={['admin', 'analyst']}>
-              <Predictions />
-            </RoleGuard>
-          } />
-          <Route path="reports" element={
-            <RoleGuard roles={['admin', 'analyst']}>
-              <Reports />
-            </RoleGuard>
-          } />
+          <Route path="predictions" element={<RoleGuard roles={['admin', 'analyst']}><Predictions /></RoleGuard>} />
+          <Route path="reports"     element={<RoleGuard roles={['admin', 'analyst']}><Reports /></RoleGuard>} />
 
           {/* Admin + Analyst + Viewer */}
-          <Route path="zones" element={
-            <RoleGuard roles={['admin', 'analyst', 'viewer']}>
-              <Zones />
-            </RoleGuard>
-          } />
+          <Route path="zones" element={<RoleGuard roles={['admin', 'analyst', 'viewer']}><Zones /></RoleGuard>} />
+
+          {/* Admin only */}
+          <Route path="audit" element={<RoleGuard roles={['admin']}><AuditLog /></RoleGuard>} />
         </Route>
 
         {/* Legacy redirects */}

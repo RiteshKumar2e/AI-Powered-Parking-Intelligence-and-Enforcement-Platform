@@ -38,6 +38,7 @@ class ViolationStatus(str, enum.Enum):
     dismissed = "dismissed"
     ticket_issued = "ticket_issued"
     appealed = "appealed"
+    flagged = "flagged"
 
 
 class Violation(Base):

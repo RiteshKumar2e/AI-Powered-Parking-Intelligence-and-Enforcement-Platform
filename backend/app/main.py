@@ -12,6 +12,7 @@ from app.websocket.manager import manager
 from app.scripts.seed import seed_database
 
 from app.api import auth, cameras, zones, violations, plates, congestion, hotspots, predictions, reports, dashboard, search, users, history, evaluation
+from app.api import watchlist, disputes, payments, audit, field
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -70,6 +71,11 @@ app.include_router(search.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(history.router, prefix="/api/v1")
 app.include_router(evaluation.router, prefix="/api/v1")
+app.include_router(watchlist.router, prefix="/api/v1")
+app.include_router(disputes.router, prefix="/api/v1")
+app.include_router(payments.router, prefix="/api/v1")
+app.include_router(audit.router, prefix="/api/v1")
+app.include_router(field.router, prefix="/api/v1")
 
 
 @app.get("/api/v1/health")

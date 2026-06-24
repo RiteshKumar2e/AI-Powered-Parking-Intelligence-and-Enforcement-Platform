@@ -113,3 +113,49 @@ export const getHistory = (params: { camera_id?: number; limit?: number; offset?
 
 export const deleteHistoryLog = (id: number) =>
   apiClient.delete(`/history/${id}`)
+
+// Watchlist
+export const getWatchlist = () =>
+  apiClient.get('/watchlist').then(r => r.data)
+
+export const addToWatchlist = (data: Record<string, unknown>) =>
+  apiClient.post('/watchlist', data).then(r => r.data)
+
+export const removeFromWatchlist = (id: number) =>
+  apiClient.delete(`/watchlist/${id}`)
+
+export const checkPlate = (plate: string) =>
+  apiClient.get(`/watchlist/check/${plate}`).then(r => r.data)
+
+// Disputes
+export const getDisputes = (params: Record<string, unknown> = {}) =>
+  apiClient.get('/disputes', { params }).then(r => r.data)
+
+export const submitDispute = (data: Record<string, unknown>) =>
+  apiClient.post('/disputes', data).then(r => r.data)
+
+export const resolveDispute = (id: number, data: Record<string, unknown>) =>
+  apiClient.patch(`/disputes/${id}`, data).then(r => r.data)
+
+// Payments
+export const getPayments = (params: Record<string, unknown> = {}) =>
+  apiClient.get('/payments', { params }).then(r => r.data)
+
+export const updatePayment = (id: number, data: Record<string, unknown>) =>
+  apiClient.patch(`/payments/${id}`, data).then(r => r.data)
+
+export const runOverdueSweep = () =>
+  apiClient.post('/payments/overdue-sweep').then(r => r.data)
+
+// Audit Log
+export const getAuditLogs = (params: Record<string, unknown> = {}) =>
+  apiClient.get('/audit', { params }).then(r => r.data)
+
+// Field Officer
+export const fieldPlateCheck = (plate: string) =>
+  apiClient.get(`/field/plate-check/${plate}`).then(r => r.data)
+
+export const fieldQuickCapture = (formData: FormData) =>
+  apiClient.post('/field/quick-capture', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }).then(r => r.data)

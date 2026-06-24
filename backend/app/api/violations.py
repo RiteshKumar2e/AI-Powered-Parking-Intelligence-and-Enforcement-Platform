@@ -1,15 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.database import get_db
 from app.models.violation import Violation, ViolationStatus, ViolationType
 from app.models.enforcement_action import EnforcementAction, ActionType
+from app.models.payment import Payment, PaymentStatus, generate_ticket_number
 from app.models.user import User
 from app.api.deps import get_current_user, require_officer_or_admin
 from app.schemas.violation import ViolationOut, ViolationDetailOut, ViolationUpdate, EnforcementActionCreate
 from app.schemas.common import PaginatedResponse
+from app.services import repeat_offender as ro_service
 
 router = APIRouter(prefix="/violations", tags=["Violations"])
 
@@ -136,6 +138,7 @@ def update_violation(
 def create_enforcement_action(
     violation_id: int,
     payload: EnforcementActionCreate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_officer_or_admin),
 ):
@@ -153,13 +156,26 @@ def create_enforcement_action(
     )
     db.add(action)
 
-    # Update violation status based on action
     if payload.action_type == "confirm":
         v.status = ViolationStatus.confirmed
     elif payload.action_type == "dismiss":
         v.status = ViolationStatus.dismissed
     elif payload.action_type == "issue_ticket":
         v.status = ViolationStatus.ticket_issued
+        # Auto-create payment record if not already present
+        existing_payment = db.query(Payment).filter(Payment.violation_id == violation_id).first()
+        if not existing_payment:
+            ticket_num = payload.ticket_number or generate_ticket_number()
+            db.add(Payment(
+                violation_id=violation_id,
+                ticket_number=ticket_num,
+                amount_due=payload.fine_amount or v.fine_amount,
+                payment_status=PaymentStatus.unpaid,
+                due_date=datetime.now(timezone.utc) + timedelta(days=30),
+            ))
+        # Check repeat offender in background to avoid slowing down response
+        if v.plate_number:
+            background_tasks.add_task(ro_service.check_and_flag_repeat, db, v.plate_number, violation_id)
 
     db.commit()
     db.refresh(action)

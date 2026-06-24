@@ -46,6 +46,12 @@ class Settings(BaseSettings):
     # CORS
     ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
 
+    # SMTP Email notifications (optional — leave blank to disable)
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASS: str = ""
+
     # Frame ingestion
     FRAME_SAMPLE_RATE: int = 5  # process every Nth frame
     MAX_DWELL_SECONDS: int = 300  # 5 min before violation flag
