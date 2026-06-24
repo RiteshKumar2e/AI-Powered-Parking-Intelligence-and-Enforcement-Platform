@@ -6,6 +6,7 @@ const statusConfig: Record<ViolationStatus, { label: string; cls: string }> = {
   dismissed:      { label: 'Dismissed',      cls: 'chip-dismissed' },
   ticket_issued:  { label: 'Ticket Issued',  cls: 'chip-issued' },
   appealed:       { label: 'Appealed',       cls: 'chip-appealed' },
+  flagged:        { label: 'Flagged',        cls: 'chip-flagged' },
 }
 
 export function StatusBadge({ status }: { status: ViolationStatus }) {
